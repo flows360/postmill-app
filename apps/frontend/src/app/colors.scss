@@ -65,26 +65,26 @@
     --youtube-svg-border: #A0A0A0;
   }
   .light {
-    --new-back-drop: #1a2744;
+    --new-back-drop: #0e2547;
     --new-settings: #eceef1;
-    --new-sep: #d5d9dd;
-    --new-border: #eaecee;
-    --new-bgColor: #f0f2f4;
+    --new-sep: #dce5ee;
+    --new-border: #dce5ee;
+    --new-bgColor: #f3f5f8;
     --new-bgColorInner: #ffffff;
     --studio-bg: #d4e0f0;
     --studio-border: #aebdd4;
-    --new-bgLineColor: #d6deea;
-    --new-textItemFocused: #1f47a8;
-    --new-textItemBlur: #63676c;
-    --new-boxFocused: #e3ecfb;
-    --new-textColor: 14 14 14;
-    --new-blockSeparator: #f2f2f4;
-    --new-btn-simple: #eceef1;
-    --new-btn-text: #0e0e0e;
-    --new-btn-primary: #2b5cd3;
+    --new-bgLineColor: #dce5ee;
+    --new-textItemFocused: #0e2547;
+    --new-textItemBlur: #243a55;
+    --new-boxFocused: #edf4fb;
+    --new-textColor: 14 37 71;
+    --new-blockSeparator: #dce5ee;
+    --new-btn-simple: #edf4fb;
+    --new-btn-text: #0e2547;
+    --new-btn-primary: #0e2547;
     /* Accessible accent text for subtle btnPrimary/15 chips in light mode: darker blue →
        ~5.7:1 on the light tinted chip bg (plain btnPrimary is ~4.2:1 there). */
-    --new-btn-primary-accent: #1e47b8;
+    --new-btn-primary-accent: #2b6fab;
     /* Light: deep red — passes on the page bg, white cards, AND the light-pink bg-red-900/20
        danger chips (a lighter red would fail on those). */
     --new-danger-text: #a01212;
@@ -95,23 +95,23 @@
     --new-priority-medium: #ffac30;
     --new-priority-low: #1d9bf0;
     --new-gray: #8c8c8c;
-    --new-input-text: #64748b;
+    --new-input-text: #5b6d82;
     --new-modal-custom: transparent;
-    --new-box-hover: #f4f6f8;
-    --new-table-border: #e7e9eb;
-    --new-table-header: #f5f7f9;
-    --new-table-text: #595d63;
-    --new-table-text-focused: #0e6ba8;
+    --new-box-hover: #f3f5f8;
+    --new-table-border: #dce5ee;
+    --new-table-header: #f1f4f7;
+    --new-table-text: #5b6d82;
+    --new-table-text-focused: #2b6fab;
     /* Semantic up/down metric colors — darkened for AA as text on light surfaces
        (green-800 / red-700). green-800 is needed (not green-700) so positive text on a
        `bg-(--positive)/10` chip still clears 4.5:1 (green-700 measured 4.39:1 there). */
     --positive: #166534;
     --negative: #b91c1c;
-    --heading-accent: #2f53a8;
+    --heading-accent: #2b6fab;
     --heading-h1: var(--new-btn-primary);
     --new-small-strips: #191818;
-    --new-big-strips: #f5f7f9;
-    --new-col-color: #eff1f3;
+    --new-big-strips: #f1f4f7;
+    --new-col-color: #f1f4f7;
     --new-menu-dots: #696868;
     --new-menu-hover: #000;
     --menu-shadow: -22px 83px 24px 0 rgba(55, 52, 75, 0),

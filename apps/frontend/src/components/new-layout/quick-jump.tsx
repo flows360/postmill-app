@@ -53,10 +53,11 @@ export function QuickJump() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="mobile:hidden flex items-center justify-between w-[300px] max-w-[25vw] h-[34px] px-[12px] rounded-[6px] bg-newBgColor border border-newTableBorder text-newTableText text-[12px] hover:border-btnPrimary transition-colors"
+        className="mobile:hidden flex items-center gap-[10px] w-[440px] max-w-[40vw] h-[38px] px-[14px] rounded-[8px] bg-newBgColor border border-transparent text-newTableText text-[13px] hover:border-newTableBorder transition-colors"
         aria-label={t('quick_jump', 'Quick jump')}
       >
-        <span>{t('quick_jump', 'Quick jump')}</span><kbd className="text-[11px]">⌘K</kbd>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+        <span className="flex-1 text-start">{t('quick_jump_pages', 'Quick jump · Pages and settings')}</span><kbd className="text-[11px]">⌘K</kbd>
       </button>
       {open && (
         <div className="fixed inset-0 z-300 flex justify-center items-start pt-[14vh] bg-newBackdrop/70" onMouseDown={() => setOpen(false)}>

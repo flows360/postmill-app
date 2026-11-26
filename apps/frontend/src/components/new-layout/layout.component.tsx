@@ -50,6 +50,7 @@ import { useModals } from '@postmill-ai/frontend/components/layout/new-modal';
 import { useAddProvider } from '@postmill-ai/frontend/components/launches/add.provider.component';
 import { usePreferredLanguageSync } from '@postmill-ai/frontend/components/layout/use-preferred-language-sync';
 import { QuickJump } from '@postmill-ai/frontend/components/new-layout/quick-jump';
+import { PageIntro } from '@postmill-ai/frontend/components/new-layout/page-intro';
 
 // Lazy — only loaded when "New Campaign" is actually chosen (keeps the campaign-modal
 // dependency graph out of the global layout bundle).
@@ -203,25 +204,39 @@ export const LayoutComponent = ({ children }: { children: ReactNode }) => {
                   <AnnouncementBanner />
                   <div className="flex-1 flex min-h-0">
                     <Support />
-                    <div className="mobile:hidden flex flex-col bg-newBgColorInner w-[224px] shrink-0 border-e border-newTableBorder">
+                    <div className="mobile:hidden flex flex-col bg-newBgColorInner w-[240px] shrink-0 border-e border-newTableBorder">
                       <div
                         id="left-menu"
                         className={clsx(
-                          'sticky top-0 h-screen w-[224px] flex flex-1'
+                          'sticky top-0 h-screen w-[240px] flex flex-1'
                         )}
                       >
-                        <div className="flex flex-col h-full gap-[24px] flex-1 py-[20px] px-[12px] overflow-y-auto">
-                          <Link href="/" aria-label={t('home', 'Home')} className="flex items-center gap-[10px] px-[10px] shrink-0">
-                            <Logo size={30} />
-                            <span className="text-[16px] font-[700] text-textColor">Postmill</span>
+                        <div className="flex flex-col h-full gap-[22px] flex-1 pt-[22px] pb-[16px] px-[12px] overflow-y-auto">
+                          <Link href="/" aria-label={t('home', 'Home')} className="flex flex-col gap-[8px] px-[12px] shrink-0">
+                            {/* Real Flows360 logo; the CSP allows https images. */}
+                            <img
+                              src="https://www.flows360.co/wp-content/uploads/2026/03/cropped-1c.-Full-Colour-Logo-2000pxl-NoBackGround-PNG-300x88.png"
+                              alt="Flows360"
+                              width={128}
+                              height={38}
+                              className="w-[128px] h-auto dark:brightness-0 dark:invert"
+                            />
+                            <span className="text-[12px] font-[500] text-newTableText">
+                              {t('postmill_publishing', 'Postmill · Publishing')}
+                            </span>
                           </Link>
-                          <TopMenu />
+                          <div className="flex flex-col flex-1 min-h-0">
+                            <TopMenu />
+                          </div>
                         </div>
                       </div>
                     </div>
                     <div className="flex-1 min-w-0 bg-newBgColor overflow-hidden flex flex-col blurMe">
-                      <div className="flex bg-newBgColorInner h-[56px] px-[28px] items-center border-b border-newTableBorder">
-                        <div className="text-[24px] font-[600] flex flex-1 items-center gap-[10px] min-w-0">
+                      <div className="flex bg-newBgColorInner h-[56px] px-[28px] items-center gap-[16px] border-b border-newTableBorder">
+                        <div className="mobile:hidden flex flex-1 items-center min-w-0">
+                          <QuickJump />
+                        </div>
+                        <div className="text-[24px] font-[600] hidden mobile:flex flex-1 items-center gap-[10px] min-w-0">
                           {/* Mobile: the left rail is hidden, so always show the
                               icon; add the wordmark only on the dashboard. */}
                           <Link
@@ -252,7 +267,6 @@ export const LayoutComponent = ({ children }: { children: ReactNode }) => {
                           {!isDashboard && <Title />}
                         </div>
                         <div className="flex gap-[14px] text-textItemBlur items-center">
-                          <QuickJump />
                           {/* Secondary utilities collapse into the avatar menu on mobile. */}
                           <div className="contents mobile:hidden">
                             <div className="flex items-center justify-center w-[36px] h-[36px]">
@@ -280,7 +294,10 @@ export const LayoutComponent = ({ children }: { children: ReactNode }) => {
                           </div>
                         </div>
                       </div>
-                      <div className="flex flex-1 gap-px">{children}</div>
+                      <div className="flex flex-1 flex-col min-h-0">
+                        <PageIntro />
+                        <div className="flex flex-1 gap-px min-h-0">{children}</div>
+                      </div>
                     </div>
                   </div>
                   <BottomTabBar />
