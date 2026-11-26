@@ -197,7 +197,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
           />
         </div>
         <div className="flex flex-col gap-[12px] mobile:p-[16px]">
-          <div className="w-full max-w-[1120px] mx-auto gap-[24px] flex flex-col relative">
+          <div className="w-full max-w-[1120px] gap-[24px] flex flex-col relative">
             {activeItem && (
               <div className="flex flex-col gap-[6px]">
                 <h1 className="text-[28px] mobile:text-[22px] leading-[1.2] font-[700] tracking-[-0.01em] text-textColor">

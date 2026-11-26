@@ -28,19 +28,6 @@ import {
 /** How a status line reads: done, worth attention, or simply informational. */
 type Tone = 'ready' | 'attention' | 'neutral';
 
-const DOT: Record<Tone, string> = {
-  ready: 'bg-(--positive,#32d583)',
-  attention: 'bg-amber-500',
-  neutral: 'bg-newTableText',
-};
-
-const StatusLine: React.FC<{ tone: Tone; label: string }> = ({ tone, label }) => (
-  <span className="flex items-center gap-[7px] text-[12px] text-newTableText">
-    <span className={clsx('w-[6px] h-[6px] rounded-full shrink-0', DOT[tone])} aria-hidden="true" />
-    {label}
-  </span>
-);
-
 const SettingsCard: React.FC<{
   item: SettingsNavItem;
   status?: { tone: Tone; label: string };
@@ -54,11 +41,10 @@ const SettingsCard: React.FC<{
       <span className="text-[14px] font-[600] text-textColor truncate">
         {t(item.labelKey, item.labelDefault)}
         <span className="font-[500] text-newTableText">{' · '}</span>
-        <span className="font-[500] text-newTableText">
+        <span className={clsx('font-[500]', status?.tone === 'attention' ? 'text-amber-700' : 'text-newTableText')}>
           {status ? status.label : t(item.descKey, item.descDefault)}
         </span>
       </span>
-      {status && <StatusLine tone={status.tone} label={t(item.descKey, item.descDefault)} />}
     </span>
     <span className="text-newTableText group-hover:text-textColor text-[18px] leading-none" aria-hidden="true">›</span>
   </Link>
@@ -132,7 +118,7 @@ export const SettingsIndexComponent: React.FC = () => {
     items: items.filter((i) => i.section === section),
   })).filter((g) => g.items.length > 0);
 
-  const cardFor = (title: string, list: SettingsNavItem[], extra?: React.ReactNode) => (
+  const cardFor = (title: string, list: SettingsNavItem[]) => (
     <section
       key={title}
       className="flex flex-col rounded-[12px] border border-newTableBorder bg-newBgColorInner px-[24px] pt-[22px] pb-[14px]"
@@ -141,35 +127,15 @@ export const SettingsIndexComponent: React.FC = () => {
       {list.map((item) => (
         <SettingsCard key={item.key} item={item} status={statusFor(item.key)} t={t} />
       ))}
-      {extra}
     </section>
   );
-
-  // Brand Studio moved off the side menu; it is listed here under Workspace when
-  // the plan and role allow it, exactly as the side menu used to decide.
-  const showBrands =
-    !!user?.tier?.brand_kits &&
-    (!permissions.isResolved || permissions.hasPermission('brands', 'read'));
-  const brandsRow = showBrands ? (
-    <Link
-      href="/brands"
-      className="group flex items-center gap-[12px] min-h-[46px] border-t border-newTableBorder py-[10px] hover:bg-boxHover transition-colors -mx-[8px] px-[8px] rounded-[6px]"
-    >
-      <span className="min-w-0 flex-1 text-[14px] font-[600] text-textColor truncate">
-        {t('brands', 'Brands')}
-        <span className="font-[500] text-newTableText">{' · '}{t('brands_voices', 'voices and brand kits')}</span>
-      </span>
-      <span className="text-newTableText group-hover:text-textColor text-[18px] leading-none" aria-hidden="true">›</span>
-    </Link>
-  ) : null;
 
   const cards = [
     ungrouped.length > 0 ? cardFor(t('settings_section_connections', 'Connections'), ungrouped) : null,
     ...groups.map((group) =>
       cardFor(
         t(`settings_section_${group.section.toLowerCase()}`, group.section),
-        group.items,
-        group.section === 'Workspace' ? brandsRow : undefined
+        group.items
       )
     ),
   ].filter(Boolean);
