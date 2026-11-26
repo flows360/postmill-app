@@ -1,12 +1,8 @@
 import React from 'react';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { SWRConfig } from 'swr';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import EditPostPage from './page';
-
-dayjs.extend(utc);
 
 const pushMock = vi.fn();
 const fetchMock = vi.fn();
