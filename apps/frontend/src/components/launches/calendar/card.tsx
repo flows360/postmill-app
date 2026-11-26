@@ -11,6 +11,7 @@ import { readableTextColor } from '@postmill-ai/frontend/components/shared/reada
 import { useMediaDirectory } from '@postmill-ai/react/helpers/use.media.directory';
 import { VideoOrImage } from '@postmill-ai/react/helpers/video.or.image';
 import { stripHtmlValidation } from '@postmill-ai/helpers/utils/strip.html.validation';
+import { previewTextWithoutLinkedImages } from '@postmill-ai/frontend/components/launches/linked-image-text';
 import { isVideoPath } from '@postmill-ai/helpers/utils/video.extensions';
 import { newDayjs } from '@postmill-ai/frontend/components/layout/set.timezone';
 import { isUSCitizen } from '@postmill-ai/frontend/components/launches/helpers/isuscitizen.utils';
@@ -316,7 +317,7 @@ export const CalendarItem: FC<{
           )}
         </div>
         <div className="min-w-0 text-[10px] leading-[13px] whitespace-pre-wrap wrap-break-word line-clamp-3">
-          {stripHtmlValidation('none', post.content, false, true, false) ||
+          {stripHtmlValidation('none', previewTextWithoutLinkedImages(post.content), false, true, false) ||
             t('no_content', 'no content')}
         </div>
         {post.thumb && (
