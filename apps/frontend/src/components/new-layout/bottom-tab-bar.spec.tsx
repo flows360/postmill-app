@@ -86,12 +86,12 @@ describe('BottomTabBar', () => {
   const getPrimaryLinks = (container: HTMLElement) =>
     Array.from(container.querySelectorAll('nav a'));
 
-  it('pins Home as the first primary tab', () => {
+  it('pins Overview as the first primary tab', () => {
     const { container } = render(<BottomTabBar />);
     const links = getPrimaryLinks(container);
 
     expect(links[0].getAttribute('href')).toBe('/dashboard');
-    expect(links[0].textContent).toContain('Home');
+    expect(links[0].textContent).toContain('Overview');
   });
 
   it('keeps Analytics, Campaigns and Media as primary tabs after Home', () => {

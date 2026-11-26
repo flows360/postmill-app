@@ -53,8 +53,8 @@ const SettingsCard: React.FC<{
     <span className="min-w-0 flex-1 flex flex-col gap-[3px]">
       <span className="text-[14px] font-[600] text-textColor truncate">
         {t(item.labelKey, item.labelDefault)}
+        <span className="font-[500] text-newTableText">{' · '}</span>
         <span className="font-[500] text-newTableText">
-          {' · '}
           {status ? status.label : t(item.descKey, item.descDefault)}
         </span>
       </span>
