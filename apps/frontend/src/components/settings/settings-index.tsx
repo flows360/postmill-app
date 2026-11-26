@@ -28,19 +28,6 @@ import {
 /** How a status line reads: done, worth attention, or simply informational. */
 type Tone = 'ready' | 'attention' | 'neutral';
 
-const DOT: Record<Tone, string> = {
-  ready: 'bg-(--positive,#32d583)',
-  attention: 'bg-amber-500',
-  neutral: 'bg-newTableText',
-};
-
-const StatusLine: React.FC<{ tone: Tone; label: string }> = ({ tone, label }) => (
-  <span className="flex items-center gap-[7px] text-[12px] text-newTableText">
-    <span className={clsx('w-[6px] h-[6px] rounded-full shrink-0', DOT[tone])} aria-hidden="true" />
-    {label}
-  </span>
-);
-
 const SettingsCard: React.FC<{
   item: SettingsNavItem;
   status?: { tone: Tone; label: string };
@@ -48,20 +35,18 @@ const SettingsCard: React.FC<{
 }> = ({ item, status, t }) => (
   <Link
     href={item.href}
-    className="group flex items-start gap-[12px] rounded-[12px] border border-newTableBorder bg-newBgColorInner p-[16px] hover:border-[#2B5CD3]/50 transition-colors"
+    className="group flex items-center gap-[12px] min-h-[46px] border-t border-newTableBorder py-[10px] hover:bg-boxHover transition-colors -mx-[8px] px-[8px] rounded-[6px]"
   >
-    <span className="mt-px w-[18px] h-[18px] shrink-0 flex items-center justify-center text-newTableText group-hover:text-btnPrimaryAccent transition-colors">
-      {item.icon}
-    </span>
-    <span className="min-w-0 flex flex-col gap-[5px]">
-      <span className="text-[14px] font-[600] text-textColor">
+    <span className="min-w-0 flex-1 flex flex-col gap-[3px]">
+      <span className="text-[14px] font-[600] text-textColor truncate">
         {t(item.labelKey, item.labelDefault)}
+        <span className="font-[500] text-newTableText">{' · '}</span>
+        <span className={clsx('font-[500]', status?.tone === 'attention' ? 'text-amber-700' : 'text-newTableText')}>
+          {status ? status.label : t(item.descKey, item.descDefault)}
+        </span>
       </span>
-      <span className="text-[13px] leading-[1.5] text-newTableText">
-        {t(item.descKey, item.descDefault)}
-      </span>
-      {status && <StatusLine tone={status.tone} label={status.label} />}
     </span>
+    <span className="text-newTableText group-hover:text-textColor text-[18px] leading-none" aria-hidden="true">›</span>
   </Link>
 );
 
@@ -133,41 +118,39 @@ export const SettingsIndexComponent: React.FC = () => {
     items: items.filter((i) => i.section === section),
   })).filter((g) => g.items.length > 0);
 
-  const grid = (list: SettingsNavItem[]) => (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[10px]">
+  const cardFor = (title: string, list: SettingsNavItem[]) => (
+    <section
+      key={title}
+      className="flex flex-col rounded-[12px] border border-newTableBorder bg-newBgColorInner px-[24px] pt-[22px] pb-[14px]"
+    >
+      <h2 className="text-[18px] font-[700] text-textColor mb-[14px]">{title}</h2>
       {list.map((item) => (
         <SettingsCard key={item.key} item={item} status={statusFor(item.key)} t={t} />
       ))}
-    </div>
+    </section>
   );
 
+  const cards = [
+    ungrouped.length > 0 ? cardFor(t('settings_section_connections', 'Connections'), ungrouped) : null,
+    ...groups.map((group) =>
+      cardFor(
+        t(`settings_section_${group.section.toLowerCase()}`, group.section),
+        group.items
+      )
+    ),
+  ].filter(Boolean);
+
   return (
-    <div className="flex flex-col gap-[26px] max-w-[1180px]">
+    <div className="flex flex-col gap-[24px] max-w-[1120px]">
       <div className="flex flex-col gap-[6px]">
-        <h1 className="text-[26px] mobile:text-[22px] font-[700] tracking-[-0.02em] text-textColor">
+        <h1 className="text-[28px] mobile:text-[22px] leading-[1.2] font-[700] tracking-[-0.01em] text-textColor">
           {t('settings', 'Settings')}
         </h1>
-        <p className="text-[13px] text-newTableText">
-          {t(
-            'settings_index_description',
-            'Connect your channels, bring your own AI and storage, and set how your workspace runs.'
-          )}
+        <p className="text-[14px] text-newTableText">
+          {t('settings_index_intro', 'Connections, workspace, automation and developer tools.')}
         </p>
       </div>
-
-      {ungrouped.length > 0 && grid(ungrouped)}
-
-      {groups.map((group) => (
-        <section key={group.section} className="flex flex-col gap-[12px]">
-          <h2 className="text-[11px] font-[600] uppercase tracking-[0.14em] text-newTableText">
-            {t(
-              `settings_section_${group.section.toLowerCase()}`,
-              group.section
-            )}
-          </h2>
-          {grid(group.items)}
-        </section>
-      ))}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-[20px] items-start">{cards}</div>
     </div>
   );
 };

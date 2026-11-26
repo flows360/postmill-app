@@ -48,17 +48,16 @@
   font-family: 'Wendy One', sans-serif;
 }
 
-h1 {
-  font-family: 'Wendy One', sans-serif;
+/* Flows360 publishing design: headings use the app's own sans-serif, bold,
+   not the display face. .font-wendy stays available where it is asked for. */
+h1,
+h2,
+h3 {
+  font-family: inherit;
 }
 
 h2 {
-  font-family: 'Wendy One', sans-serif;
   color: var(--heading-accent);
-}
-
-h3 {
-  font-family: 'Wendy One', sans-serif;
 }
 
 @keyframes spin {

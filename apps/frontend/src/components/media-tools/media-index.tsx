@@ -213,16 +213,13 @@ export const MediaIndex: React.FC = () => {
   const showFilters = studios.length >= MIN_STUDIOS_FOR_FILTER && badges.length > 1;
 
   return (
-    <div className="p-[20px] mobile:p-[16px] flex flex-col gap-[28px] max-w-[1180px]">
+    <div className="px-[28px] pt-[26px] pb-[28px] mobile:p-[16px] flex flex-col gap-[24px] max-w-[1180px]">
       <div className="flex flex-col gap-[6px]">
-        <h1 className="text-[26px] mobile:text-[22px] font-[700] tracking-[-0.02em] text-textColor">
-          {t('media_index_title', 'Make something')}
+        <h1 className="text-[28px] mobile:text-[22px] leading-[1.2] font-[700] tracking-[-0.01em] text-textColor">
+          {t('create', 'Create')}
         </h1>
-        <p className="text-[13px] text-newTableText">
-          {t(
-            'media_index_description',
-            'Design it yourself, generate it with AI, or pull from a stock library.'
-          )}
+        <p className="text-[14px] text-newTableText">
+          {t('create_intro', 'Design, source and review media.')}
         </p>
       </div>
 

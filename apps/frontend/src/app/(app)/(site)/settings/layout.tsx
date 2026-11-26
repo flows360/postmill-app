@@ -88,8 +88,10 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
       {/* Desktop side rail (collapsible). Hidden on mobile — replaced by the strip. */}
       <div
         className={clsx(
-          'mobile:hidden bg-newBgColorInner flex flex-col transition-all p-[20px] h-[calc(100vh-104px)] mobile:h-auto min-h-0',
-          collapsed ? 'w-[76px]' : 'w-[260px]'
+          // The Flows360 layout reaches every setting from the Settings page and the
+          // breadcrumb, so the extra rail is not shown.
+          'hidden bg-newBgColorInner border-e border-newTableBorder flex-col transition-all p-[16px] h-[calc(100vh-56px)] mobile:h-auto min-h-0',
+          collapsed ? 'w-[64px]' : 'w-[225px]'
         )}
       >
         <div
@@ -186,20 +188,26 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
         </div>
       </div>
 
-      <div className="bg-newBgColorInner flex-1 flex-col flex min-w-0 mobile:p-0 p-[20px] gap-[12px] h-[calc(100vh-104px)] mobile:h-auto min-h-0 overflow-y-auto mobile:overflow-visible">
-        <SubmenuStrip
-          ariaLabel={t('settings_sections_aria', 'Settings sections')}
-          overflowLabel={t('more_settings_sections', 'More settings')}
-          items={stripItems}
-        />
+      <div className="bg-newBgColor flex-1 flex-col flex min-w-0 mobile:p-0 px-[28px] pt-[26px] pb-[28px] gap-[12px] h-[calc(100vh-56px)] mobile:h-auto min-h-0 overflow-y-auto mobile:overflow-visible">
+        <div className="hidden mobile:block">
+          <SubmenuStrip
+            ariaLabel={t('settings_sections_aria', 'Settings sections')}
+            overflowLabel={t('more_settings_sections', 'More settings')}
+            items={stripItems}
+          />
+        </div>
         <div className="flex flex-col gap-[12px] mobile:p-[16px]">
-          <div className="w-full mx-auto gap-[24px] flex flex-col relative rounded-[4px]">
+          <div className="w-full max-w-[1120px] gap-[24px] flex flex-col relative">
             {activeItem && (
-              <div className="flex flex-col gap-[4px]">
-                <h2 className="text-[20px] font-semibold text-textColor">
+              <div className="flex flex-col gap-[6px]">
+                <h1 className="text-[28px] mobile:text-[22px] leading-[1.2] font-[700] tracking-[-0.01em] text-textColor">
+                  <Link href="/settings" className="hover:underline">
+                    {t('settings', 'Settings')}
+                  </Link>
+                  <span className="text-newTableText font-[500]">{' / '}</span>
                   {t(activeItem.labelKey, activeItem.labelDefault)}
-                </h2>
-                <p className="text-[13px] text-newTableText">
+                </h1>
+                <p className="text-[14px] text-newTableText">
                   {t(activeItem.descKey, activeItem.descDefault)}
                 </p>
               </div>

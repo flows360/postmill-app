@@ -255,15 +255,31 @@ export const useMenuItem = () => {
     },
   ] satisfies MenuItemInterface[] as MenuItemInterface[];
 
-  firstMenu.sort((a, b) => a.name.localeCompare(b.name));
-  const homeIndex = firstMenu.findIndex((item) => item.path === '/dashboard');
-  if (homeIndex > 0) {
-    const [home] = firstMenu.splice(homeIndex, 1);
-    firstMenu.unshift(home);
-  }
+  // Flows360 publishing layout: one ordered, text-led menu. The calendar and the
+  // post list are two views of the same /posts page, chosen by its display query.
+  const byPath = (path: string) => firstMenu.find((item) => item.path === path);
+  const posts = byPath('/posts');
+  const named = (item: MenuItemInterface | undefined, name: string, path?: string) =>
+    item ? { ...item, name, path: path || item.path } : undefined;
+  const ordered = [
+    named(byPath('/dashboard'), t('overview', 'Overview')),
+    named(posts, isGeneral ? t('calendar', 'Calendar') : t('launches', 'Launches'), '/posts?display=week'),
+    named(posts, t('posts', 'Posts'), '/posts?display=list'),
+    named(byPath('/campaigns'), t('campaigns', 'Campaigns')),
+    named(byPath('/files'), t('library', 'Library')),
+    named(byPath('/media'), t('create', 'Create')),
+    named(byPath('/analytics'), t('analytics', 'Analytics')),
+    named(byPath('/replies'), t('inbox', 'Inbox')),
+    named(byPath('/agents'), t('agent', 'Agent')),
+  ].filter(Boolean) as MenuItemInterface[];
+  // Anything not placed above (for example Brand Studio) stays reachable at the end.
+  const placed = new Set(['/dashboard', '/posts', '/campaigns', '/files', '/media', '/analytics', '/replies', '/agents']);
+  // Brand Studio lives under Settings, Workspace in this layout; it stays in quick jump.
+  const elsewhere = firstMenu.filter((item) => !placed.has(item.path));
+  firstMenu.splice(0, firstMenu.length, ...ordered);
 
   return {
-    all: [...firstMenu, ...secondMenu],
+    all: [...firstMenu, ...elsewhere, ...secondMenu],
     firstMenu,
     secondMenu,
   };
@@ -276,7 +292,7 @@ export const TopMenu: FC = () => {
   const t = useT();
   return (
     <>
-      <div className="flex flex-1 flex-col minCustom:gap-[16px] blurMe">
+      <div className="flex flex-col gap-[4px] blurMe">
         {
           // @ts-ignore
           user?.orgId &&
@@ -312,7 +328,7 @@ export const TopMenu: FC = () => {
         }
 
       </div>
-      <div className="flex flex-col minCustom:gap-[20px] custom:gap-[8px] blurMe">
+      <div className="flex flex-col gap-[4px] mt-[4px] blurMe">
         {secondMenu
           .filter((f) => {
             if (f.hide) {

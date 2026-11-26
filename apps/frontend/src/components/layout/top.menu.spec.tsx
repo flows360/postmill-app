@@ -34,8 +34,10 @@ vi.mock('@postmill-ai/frontend/components/layout/agent.media.modal', () => ({
   AgentMediaModal: () => null,
 }));
 
+let mockDisplay: string | null = null;
 vi.mock('next/navigation', () => ({
   usePathname: () => mockPathname || '/dashboard',
+  useSearchParams: () => new URLSearchParams(mockDisplay ? `display=${mockDisplay}` : ''),
 }));
 
 let mockPermissions = {
@@ -56,31 +58,37 @@ vi.mock('@postmill-ai/frontend/components/layout/use-permissions', () => ({
 import { TopMenu, useMenuItem } from './top.menu';
 
 describe('TopMenu', () => {
-  describe('Posts rename (was Schedule/Launches)', () => {
+  describe('Calendar and Posts views of /posts', () => {
     beforeEach(() => {
       mockBillingEnabled = false;
+      mockDisplay = null;
     });
 
-    it('in general mode, the menu item name should be "Posts"', () => {
+    it('in general mode shows Calendar and Posts as two views of /posts', () => {
       mockIsGeneral = true;
       render(<TopMenu />);
-
-      expect(screen.getByTitle('Posts')).toBeDefined();
+      expect(screen.getByTitle('Calendar').getAttribute('href')).toBe('/posts?display=week');
+      expect(screen.getByTitle('Posts').getAttribute('href')).toBe('/posts?display=list');
     });
 
-    it('in general mode, the menu item path should be "/posts"', () => {
-      mockIsGeneral = true;
-      render(<TopMenu />);
-
-      const postsLink = screen.getByTitle('Posts');
-      expect(postsLink.getAttribute('href')).toBe('/posts');
-    });
-
-    it('in non-general mode, the label should be "Launches"', () => {
+    it('in non-general mode, the calendar label should be "Launches"', () => {
       mockIsGeneral = false;
       render(<TopMenu />);
-
       expect(screen.getByTitle('Launches')).toBeDefined();
+    });
+
+    it('lights Posts only for the list view and Calendar otherwise', () => {
+      mockIsGeneral = true;
+      mockPathname = '/posts';
+      mockDisplay = 'list';
+      const { unmount } = render(<TopMenu />);
+      expect(screen.getByTitle('Posts').className).toContain('bg-boxFocused');
+      expect(screen.getByTitle('Calendar').className).not.toContain('bg-boxFocused');
+      unmount();
+      mockDisplay = 'month';
+      render(<TopMenu />);
+      expect(screen.getByTitle('Calendar').className).toContain('bg-boxFocused');
+      expect(screen.getByTitle('Posts').className).not.toContain('bg-boxFocused');
     });
   });
 
@@ -123,30 +131,30 @@ describe('TopMenu', () => {
     });
   });
 
-  describe('Home navigation (2.4)', () => {
+  describe('Overview navigation', () => {
     beforeEach(() => {
       mockIsGeneral = true;
       mockBillingEnabled = false;
       mockPathname = '/dashboard';
+      mockDisplay = null;
     });
 
-    it('pins Home first in firstMenu', () => {
+    it('pins Overview first in firstMenu', () => {
       const { result } = renderHook(() => useMenuItem());
       expect(result.current.firstMenu[0].path).toBe('/dashboard');
-      expect(result.current.firstMenu[0].name).toBe('Home');
+      expect(result.current.firstMenu[0].name).toBe('Overview');
     });
 
-    it('keeps the remaining firstMenu items sorted alphabetically', () => {
+    it('keeps the design order', () => {
       const { result } = renderHook(() => useMenuItem());
-      const remaining = result.current.firstMenu.slice(1).map((i) => i.name);
-      expect(remaining).toEqual([...remaining].sort((a, b) => a.localeCompare(b)));
+      expect(result.current.firstMenu.map((i) => i.name)).toEqual([
+        'Overview', 'Calendar', 'Posts', 'Campaigns', 'Library', 'Create', 'Analytics', 'Inbox', 'Agent',
+      ]);
     });
 
-    it('highlights Home as active on /dashboard', () => {
-      mockPathname = '/dashboard';
+    it('highlights Overview as active on /dashboard', () => {
       render(<TopMenu />);
-      const homeLink = screen.getByTitle('Home');
-      expect(homeLink.className).toContain('bg-boxFocused');
+      expect(screen.getByTitle('Overview').className).toContain('bg-boxFocused');
     });
   });
 });
