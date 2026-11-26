@@ -276,7 +276,7 @@ export const TopMenu: FC = () => {
   const t = useT();
   return (
     <>
-      <div className="flex flex-1 flex-col minCustom:gap-[16px] blurMe">
+      <div className="flex flex-1 flex-col gap-[3px] blurMe">
         {
           // @ts-ignore
           user?.orgId &&
@@ -312,7 +312,7 @@ export const TopMenu: FC = () => {
         }
 
       </div>
-      <div className="flex flex-col minCustom:gap-[20px] custom:gap-[8px] blurMe">
+      <div className="flex flex-col gap-[3px] border-t border-newTableBorder pt-[12px] blurMe">
         {secondMenu
           .filter((f) => {
             if (f.hide) {
