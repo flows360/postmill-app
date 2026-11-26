@@ -49,6 +49,7 @@ import { BottomTabBar } from '@postmill-ai/frontend/components/new-layout/bottom
 import { useModals } from '@postmill-ai/frontend/components/layout/new-modal';
 import { useAddProvider } from '@postmill-ai/frontend/components/launches/add.provider.component';
 import { usePreferredLanguageSync } from '@postmill-ai/frontend/components/layout/use-preferred-language-sync';
+import { QuickJump } from '@postmill-ai/frontend/components/new-layout/quick-jump';
 
 // Lazy — only loaded when "New Campaign" is actually chosen (keeps the campaign-modal
 // dependency graph out of the global layout bundle).
@@ -191,7 +192,7 @@ export const LayoutComponent = ({ children }: { children: ReactNode }) => {
             <ContinueProvider />
             <div
               className={clsx(
-                'flex flex-col min-h-screen min-w-full text-newTextColor p-[12px] mobile:pb-[72px]',
+                'flex flex-col min-h-screen min-w-full text-newTextColor bg-newBgColor mobile:pb-[72px]',
                 jakartaSans.className
               )}
             >
@@ -200,25 +201,26 @@ export const LayoutComponent = ({ children }: { children: ReactNode }) => {
               ) : (
                 <>
                   <AnnouncementBanner />
-                  <div className="flex-1 flex gap-[8px]">
+                  <div className="flex-1 flex min-h-0">
                     <Support />
-                    <div className="mobile:hidden flex flex-col bg-newBgColorInner w-[80px] rounded-[12px]">
+                    <div className="mobile:hidden flex flex-col bg-newBgColorInner w-[224px] shrink-0 border-e border-newTableBorder">
                       <div
                         id="left-menu"
                         className={clsx(
-                          'fixed h-full w-[64px] inset-s-[17px] flex flex-1 top-0'
+                          'sticky top-0 h-screen w-[224px] flex flex-1'
                         )}
                       >
-                        <div className="flex flex-col h-full gap-[32px] flex-1 py-[12px]">
-                          <Link href="/" aria-label={t('home', 'Home')}>
-                            <Logo />
+                        <div className="flex flex-col h-full gap-[24px] flex-1 py-[20px] px-[12px] overflow-y-auto">
+                          <Link href="/" aria-label={t('home', 'Home')} className="flex items-center gap-[10px] px-[10px] shrink-0">
+                            <Logo size={30} />
+                            <span className="text-[16px] font-[700] text-textColor">Postmill</span>
                           </Link>
                           <TopMenu />
                         </div>
                       </div>
                     </div>
-                    <div className="flex-1 min-w-0 bg-newBgLineColor rounded-[12px] overflow-hidden flex flex-col gap-px blurMe">
-                      <div className="flex bg-newBgColorInner h-[56px] lg:h-[80px] px-[20px] items-center">
+                    <div className="flex-1 min-w-0 bg-newBgColor overflow-hidden flex flex-col blurMe">
+                      <div className="flex bg-newBgColorInner h-[56px] px-[28px] items-center border-b border-newTableBorder">
                         <div className="text-[24px] font-[600] flex flex-1 items-center gap-[10px] min-w-0">
                           {/* Mobile: the left rail is hidden, so always show the
                               icon; add the wordmark only on the dashboard. */}
@@ -249,7 +251,8 @@ export const LayoutComponent = ({ children }: { children: ReactNode }) => {
                               would be redundant, so it's shown only off-dashboard. */}
                           {!isDashboard && <Title />}
                         </div>
-                        <div className="flex gap-[20px] text-textItemBlur items-center">
+                        <div className="flex gap-[14px] text-textItemBlur items-center">
+                          <QuickJump />
                           {/* Secondary utilities collapse into the avatar menu on mobile. */}
                           <div className="contents mobile:hidden">
                             <div className="flex items-center justify-center w-[36px] h-[36px]">

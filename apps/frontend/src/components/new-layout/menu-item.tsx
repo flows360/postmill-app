@@ -15,16 +15,16 @@ export const MenuItem: FC<{ label: string; icon: ReactNode; path: string; onClic
   const isActive = currentPath.indexOf(path) === 0;
 
   const className = clsx(
-    'group relative w-full minCustom:h-[54px] custom:h-[44px] py-[8px] px-[6px] minCustom:gap-[4px] custom:gap-[2px] flex flex-col font-[600] items-center justify-center rounded-[12px] hover:text-textItemFocused hover:bg-boxFocused transition-colors',
+    'group relative w-full min-h-[38px] py-[8px] px-[12px] gap-[12px] flex items-center rounded-[6px] text-[13px] font-[500] text-start hover:text-textItemFocused hover:bg-boxHover transition-colors',
     isActive
-      ? 'text-textItemFocused bg-boxFocused before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-[4px] before:h-[20px] before:bg-btnPrimary before:rounded-r-[4px]'
+      ? 'text-textItemFocused bg-boxHover font-[700]'
       : 'text-textItemBlur'
   );
 
   const inner = (
     <>
-      <div className="w-[20px] h-[20px] flex items-center justify-center custom:scale-90 transition-transform">{icon}</div>
-      <div className="custom:text-[9px] minCustom:text-[10px] leading-[1.1] text-center">
+      <div className="w-[20px] h-[20px] shrink-0 flex items-center justify-center">{icon}</div>
+      <div className="min-w-0 truncate leading-[1.2]">
         {label}
       </div>
       {badge !== undefined && badge > 0 && (
