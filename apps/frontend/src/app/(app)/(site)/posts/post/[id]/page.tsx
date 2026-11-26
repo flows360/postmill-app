@@ -4,6 +4,7 @@ import useSWR from 'swr';
 import { useFetch } from '@postmill-ai/helpers/utils/custom.fetch';
 import { useParams, useRouter } from 'next/navigation';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import { ExistingDataContextProvider } from '@postmill-ai/frontend/components/launches/helpers/use.existing.data';
 import { Integrations } from '@postmill-ai/frontend/components/launches/calendar.context';
 import { Composer } from '@postmill-ai/frontend/components/composer/composer';
@@ -11,6 +12,8 @@ import { LoadingComponent } from '@postmill-ai/frontend/components/layout/loadin
 import { EmptyState } from '@postmill-ai/frontend/components/ui/empty-state';
 import { Button } from '@postmill-ai/react/form/button';
 import { useT } from '@postmill-ai/react/translation/get.transation.service.client';
+
+dayjs.extend(utc);
 
 export default function EditPostPage() {
   const fetch = useFetch();
