@@ -20,6 +20,7 @@ export * from './poll.dto';
 export * from './reddit.dto';
 export * from './skool.dto';
 export * from './slack.dto';
+export * from './substack.dto';
 export * from './tiktok.dto';
 export * from './twitch.dto';
 export * from './threads.settings.dto';
