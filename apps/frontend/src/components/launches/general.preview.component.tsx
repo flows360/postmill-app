@@ -9,6 +9,7 @@ import { textSlicer } from '@postmill-ai/helpers/utils/count.length';
 import SafeImage from '@postmill-ai/react/helpers/safe.image';
 import { useLaunchStore } from '@postmill-ai/frontend/components/composer/store';
 import { stripHtmlValidation } from '@postmill-ai/helpers/utils/strip.html.validation';
+import { previewTextWithoutLinkedImages } from '@postmill-ai/frontend/components/launches/linked-image-text';
 import { SafeContent } from '@postmill-ai/frontend/components/shared/safe-content';
 import { useT } from '@postmill-ai/react/translation/get.transation.service.client';
 
@@ -23,7 +24,7 @@ export const GeneralPreviewComponent: FC<{
   const renderContent = topValue.map((p) => {
     const newContent = stripHtmlValidation(
       'normal',
-      p.content.replace(
+      previewTextWithoutLinkedImages(p.content).replace(
         /<span.*?data-mention-id="([.\s\S]*?)"[.\s\S]*?>([.\s\S]*?)<\/span>/gi,
         (match, match1, match2) => {
           return `[[[${match2}]]]`;
