@@ -48,20 +48,21 @@ const SettingsCard: React.FC<{
 }> = ({ item, status, t }) => (
   <Link
     href={item.href}
-    className="group flex items-start gap-[12px] rounded-[12px] border border-newTableBorder bg-newBgColorInner p-[16px] hover:border-[#2B5CD3]/50 transition-colors"
+    className="group flex items-center gap-[14px] min-h-[70px] border-b border-newTableBorder px-[18px] py-[12px] hover:bg-boxHover transition-colors"
   >
-    <span className="mt-px w-[18px] h-[18px] shrink-0 flex items-center justify-center text-newTableText group-hover:text-btnPrimaryAccent transition-colors">
+    <span className="w-[18px] h-[18px] shrink-0 flex items-center justify-center text-newTableText group-hover:text-btnPrimaryAccent transition-colors">
       {item.icon}
     </span>
-    <span className="min-w-0 flex flex-col gap-[5px]">
+    <span className="min-w-0 flex-1 flex flex-col gap-[3px]">
       <span className="text-[14px] font-[600] text-textColor">
         {t(item.labelKey, item.labelDefault)}
       </span>
-      <span className="text-[13px] leading-[1.5] text-newTableText">
+      <span className="text-[12px] leading-[1.4] text-newTableText line-clamp-1">
         {t(item.descKey, item.descDefault)}
       </span>
       {status && <StatusLine tone={status.tone} label={status.label} />}
     </span>
+    <span className="text-newTableText group-hover:text-textColor" aria-hidden="true">›</span>
   </Link>
 );
 
@@ -134,7 +135,7 @@ export const SettingsIndexComponent: React.FC = () => {
   })).filter((g) => g.items.length > 0);
 
   const grid = (list: SettingsNavItem[]) => (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[10px]">
+    <div className="grid grid-cols-1 lg:grid-cols-2 rounded-[8px] border border-newTableBorder bg-newBgColorInner overflow-hidden">
       {list.map((item) => (
         <SettingsCard key={item.key} item={item} status={statusFor(item.key)} t={t} />
       ))}
@@ -142,7 +143,7 @@ export const SettingsIndexComponent: React.FC = () => {
   );
 
   return (
-    <div className="flex flex-col gap-[26px] max-w-[1180px]">
+    <div className="flex flex-col gap-[24px] max-w-[1120px]">
       <div className="flex flex-col gap-[6px]">
         <h1 className="text-[26px] mobile:text-[22px] font-[700] tracking-[-0.02em] text-textColor">
           {t('settings', 'Settings')}
