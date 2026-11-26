@@ -1,10 +1,10 @@
 export const dynamic = 'force-dynamic';
-import { LaunchesComponent } from '@postmill-ai/frontend/components/launches/launches.component';
+import { PostsView } from '@postmill-ai/frontend/components/launches/posts-view';
 import { Metadata } from 'next';
 export const metadata: Metadata = {
   title: `Postmill Posts`,
   description: '',
 };
 export default async function Index() {
-  return <LaunchesComponent />;
+  return <PostsView />;
 }
