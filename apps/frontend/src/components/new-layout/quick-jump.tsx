@@ -35,6 +35,7 @@ export function QuickJump() {
     const onKey = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault();
+        setQuery('');
         setOpen((current) => !current);
       }
       if (event.key === 'Escape') setOpen(false);
@@ -45,14 +46,16 @@ export function QuickJump() {
 
   useEffect(() => {
     if (open) input.current?.focus();
-    else setQuery('');
   }, [open]);
 
   return (
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          setQuery('');
+          setOpen(true);
+        }}
         className="mobile:hidden flex items-center gap-[10px] w-[440px] max-w-[40vw] h-[38px] px-[14px] rounded-[8px] bg-newBgColor border border-transparent text-newTableText text-[13px] hover:border-newTableBorder transition-colors"
         aria-label={t('quick_jump', 'Quick jump')}
       >
