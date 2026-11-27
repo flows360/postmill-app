@@ -8,9 +8,9 @@ export {
 } from '@postmill-ai/frontend/components/settings/shared/fetch-error';
 
 export function greetingForUser(name: string, hour: number, t: TranslateFn) {
-  if (hour < 5) return t('greeting_working_late', 'Working late, {{name}}?', { name });
-  if (hour < 12) return t('greeting_good_morning', 'Good morning, {{name}}', { name });
-  if (hour < 17) return t('greeting_good_afternoon', 'Good afternoon, {{name}}', { name });
-  if (hour < 22) return t('greeting_good_evening', 'Good evening, {{name}}', { name });
-  return t('greeting_good_night', 'Good night, {{name}}', { name });
+  if (hour < 5) return t('greeting_working_late', 'Working Late, {{name}}?', { name });
+  if (hour < 12) return t('greeting_good_morning', 'Good Morning, {{name}}', { name });
+  if (hour < 17) return t('greeting_good_afternoon', 'Good Afternoon, {{name}}', { name });
+  if (hour < 22) return t('greeting_good_evening', 'Good Evening, {{name}}', { name });
+  return t('greeting_good_night', 'Good Night, {{name}}', { name });
 }

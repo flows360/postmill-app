@@ -12,7 +12,8 @@ export const hasPageHeading = (pathname: string) =>
   pathname.startsWith('/settings/');
 
 // Page title and subtitle above the main list pages, as in the Flows360
-// publishing design. Detail pages, settings (which has its own heading) and
+// publishing design. Detail pages, the Overview (its greeting is the title),
+// settings (which has its own heading) and
 // pages that already carry a title (Inbox, Library) are left alone.
 export const PageIntro = () => {
   const t = useT();
@@ -22,8 +23,6 @@ export const PageIntro = () => {
 
   const intro = (() => {
     switch (pathname) {
-      case '/dashboard':
-        return [t('overview', 'Overview'), t('overview_intro', 'Publishing control room.')];
       case '/posts':
         return params?.get('display') === 'list'
           ? [t('posts', 'Posts'), t('posts_intro', 'Queue, drafts, approval and publishing history.')]

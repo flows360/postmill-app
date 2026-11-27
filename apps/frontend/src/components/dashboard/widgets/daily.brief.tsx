@@ -44,9 +44,11 @@ interface DailyBriefProps {
    * never produce one.
    */
   onOpenChange?: (open: boolean) => void;
+  /** `card`: always-open card for the Overview grid (Flows360 design). */
+  variant?: 'collapsible' | 'card';
 }
 
-export const DailyBrief: FC<DailyBriefProps> = ({ open, onOpenChange }) => {
+export const DailyBrief: FC<DailyBriefProps> = ({ open, onOpenChange, variant = 'collapsible' }) => {
   const router = useRouter();
   const aiActive = useAiActive();
   const { data, error, isLoading, generate } = useDailyBrief();
@@ -110,6 +112,86 @@ export const DailyBrief: FC<DailyBriefProps> = ({ open, onOpenChange }) => {
       setGenerating(false);
     }
   };
+
+  const regenerate = async () => {
+    setGenerating(true);
+    try {
+      await generate();
+    } catch (err: any) {
+      toaster.show(
+        err?.status === 503
+          ? t('ai_not_configured', 'AI is not configured.')
+          : err?.status === 429
+            ? t('ai_budget_exceeded_upgrade', 'AI budget exceeded. Upgrade or wait for reset.')
+            : err?.providerError
+              ? providerErrorToastText(t, err.providerError)
+              : err?.messageKey
+                ? t(err.messageKey, err.message)
+                : err?.message || t('could_not_generate_brief', 'Could not generate brief'),
+        'warning'
+      );
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  if (variant === 'card') {
+    const when = cached?.generatedAt ? new Date(cached.generatedAt) : null;
+    return (
+      <div
+        id="daily-brief"
+        data-testid="daily-brief-card"
+        className="h-full bg-boxFocused/40 border border-btnPrimaryAccent/30 rounded-[12px] px-[20px] pt-[18px] pb-[20px] flex flex-col gap-[14px] min-w-0"
+      >
+        <div>
+          <div className="flex items-center gap-[8px]">
+            <SparkleIcon className="text-btnPrimaryAccent shrink-0" />
+            <h2 className="text-[16px] font-[700] text-textColor">{t('daily_brief', 'Daily Brief')}</h2>
+          </div>
+          <p className="text-[12.5px] text-newTableText mt-[4px]">
+            {when
+              ? t('brief_written_at', 'Written by the Postmill agent at {{time}}', {
+                  time: when.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                })
+              : t('brief_sub', 'A short summary of your publishing, written by AI')}
+          </p>
+        </div>
+        <div className="flex-1 min-h-0 overflow-y-auto max-h-[260px]">
+          {isLoading || generating ? (
+            <TabSkeleton variant="list" />
+          ) : cached ? (
+            <p data-testid="daily-brief-body" className="text-[13px] text-textColor leading-relaxed whitespace-pre-line">
+              {cached.brief}
+            </p>
+          ) : statusError?.status === 429 ? (
+            <p className="text-[13px] text-textColor">
+              {t('ai_budget_exceeded_resume', 'AI budget exceeded. Briefs will resume after your budget resets.')}
+            </p>
+          ) : (
+            <p className="text-[13px] text-textColor">
+              {t('no_brief_today_card', 'No brief yet for today.')}
+            </p>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-[10px]">
+          <Button
+            onClick={() => router.push('/agents')}
+            className="px-[14px] h-[36px] text-[13px] font-[600] rounded-[8px]"
+          >
+            {t('ask_the_agent', 'Ask The Agent')}
+          </Button>
+          <Button
+            secondary
+            disabled={generating}
+            onClick={regenerate}
+            className="px-[14px] h-[36px] text-[13px] font-[600] rounded-[8px] bg-newBgColorInner border border-newTableBorder"
+          >
+            {cached ? t('regenerate', 'Regenerate') : t('generate_brief', 'Generate Brief')}
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-newBgColorInner border border-newTableBorder rounded-[12px] overflow-hidden">

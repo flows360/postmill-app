@@ -12,6 +12,13 @@ import { usePermissions } from '@postmill-ai/frontend/components/layout/use-perm
 export interface SectionCardProps {
   id: string;
   title: string;
+  /** One line under the title, as in the Flows360 design. */
+  subtitle?: string;
+  /** Text for the header link; defaults to "View all". */
+  viewAllLabel?: string;
+  /** Extra content on the right of the header (a status pill, say). */
+  aside?: ReactNode;
+  className?: string;
   icon?: ReactNode;
   badge?: number;
   viewAllHref?: string;
@@ -22,6 +29,10 @@ export interface SectionCardProps {
 export const SectionCard: FC<SectionCardProps> = ({
   id,
   title,
+  subtitle,
+  viewAllLabel,
+  aside,
+  className,
   icon,
   badge,
   viewAllHref,
@@ -45,34 +56,45 @@ export const SectionCard: FC<SectionCardProps> = ({
   return (
     <div
       data-section-id={id}
-      className="bg-newBgColorInner border border-newTableBorder rounded-[12px] min-w-0 overflow-hidden flex flex-col"
+      className={
+        'bg-newBgColorInner border border-newTableBorder rounded-[12px] min-w-0 overflow-hidden flex flex-col ' +
+        (className || '')
+      }
     >
-      <div className="flex items-center justify-between gap-[12px] px-[16px] py-[12px] border-b border-newTableBorder">
-        <div className="flex items-center gap-[8px] min-w-0">
+      <div className="flex items-start justify-between gap-[12px] px-[20px] pt-[18px]">
+        <div className="flex items-start gap-[8px] min-w-0">
           {icon && (
-            <span className="text-newTableText shrink-0 w-[18px] h-[18px] flex items-center justify-center">
+            <span className="text-btnPrimaryAccent shrink-0 w-[18px] h-[22px] flex items-center justify-center">
               {icon}
             </span>
           )}
-          <h2 className="text-[13px] font-medium text-newTableText uppercase tracking-wide truncate">
-            {title}
-          </h2>
-          {badge !== undefined && badge > 0 && (
-            <span className="shrink-0 min-w-[18px] h-[18px] px-[5px] flex items-center justify-center rounded-full bg-btnPrimary text-[10px] font-semibold text-white">
-              {badge > 99 ? '99+' : badge}
-            </span>
+          <div className="min-w-0">
+            <div className="flex items-center gap-[8px] min-w-0">
+              <h2 className="text-[16px] font-[700] text-textColor truncate">{title}</h2>
+              {badge !== undefined && badge > 0 && (
+                <span className="shrink-0 min-w-[20px] h-[20px] px-[6px] flex items-center justify-center rounded-full bg-amber-100 text-[11px] font-[700] text-amber-800">
+                  {badge > 99 ? '99+' : badge}
+                </span>
+              )}
+            </div>
+            {subtitle && (
+              <p className="text-[12.5px] text-newTableText mt-[4px]">{subtitle}</p>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center gap-[10px] shrink-0">
+          {aside}
+          {viewAllHref && (
+            <Link
+              href={viewAllHref}
+              className="shrink-0 text-[13px] font-[600] text-btnPrimaryAccent hover:underline"
+            >
+              {viewAllLabel || t('view_all', 'View all')} →
+            </Link>
           )}
         </div>
-        {viewAllHref && (
-          <Link
-            href={viewAllHref}
-            className="shrink-0 text-[12px] font-medium text-newTableText hover:text-textColor transition-colors"
-          >
-            {t('view_all', 'View all')}
-          </Link>
-        )}
       </div>
-      <div className="p-[16px] min-w-0 flex-1">
+      <div className="px-[20px] pt-[16px] pb-[20px] min-w-0 flex-1">
         <ErrorBoundary
           fallback={
             <ErrorState
@@ -89,4 +111,20 @@ export const SectionCard: FC<SectionCardProps> = ({
       </div>
     </div>
   );
+};
+
+// Applies the same hide-preference and permission rules as SectionCard, for a
+// section that draws its own boxes (the number tiles).
+export const SectionCardGate: FC<{
+  id: string;
+  permission?: [string, string];
+  children: ReactNode;
+}> = ({ id, permission, children }) => {
+  const { hidden } = useDashboardPrefs();
+  const permissions = usePermissions();
+  if (hidden.includes(id)) return null;
+  if (permission && permissions.isResolved && !permissions.hasPermission(...permission)) {
+    return null;
+  }
+  return <div data-section-id={id}>{children}</div>;
 };

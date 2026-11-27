@@ -19,6 +19,10 @@ vi.mock('@postmill-ai/frontend/components/layout/streak.component', () => ({
   StreakComponent: () => <div data-testid="streak" />,
 }));
 
+vi.mock('./hooks/useDashboardSummary', () => ({
+  useDashboardSummary: () => ({ data: undefined }),
+}));
+
 vi.mock('./customize.popover', () => ({
   CustomizePopover: () => <div data-testid="customize" />,
 }));

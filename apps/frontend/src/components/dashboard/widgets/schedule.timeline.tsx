@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useSchedule } from '../hooks/useSchedule';
 import { EmptyState, TabSkeleton } from '@postmill-ai/frontend/components/analytics/kit/states';
 import { ChannelAvatar } from '@postmill-ai/frontend/components/analytics/kit/channel-avatar';
+import { getTimezone } from '@postmill-ai/frontend/components/layout/set.timezone';
 import { useT } from '@postmill-ai/react/translation/get.transation.service.client';
 
 interface UpcomingPost {
@@ -20,18 +21,21 @@ interface ScheduleTimelineProps {
   upcomingPosts?: UpcomingPost[];
 }
 
-const ComposerFillButton: FC<{ date: string }> = ({ date }) => {
-  const router = useRouter();
-  const t = useT();
-  return (
-    <button
-      type="button"
-      onClick={() => router.push(`/posts/post?date=${date}T10:00:00`)}
-      className="mt-[8px] inline-flex items-center justify-center min-h-[40px] px-[12px] py-[8px] text-[12px] font-medium rounded-[6px] bg-btnPrimary text-white hover:bg-btnPrimary/90 transition-colors"
-    >
-      {t('fill_button', 'Fill')}
-    </button>
-  );
+// How many post chips a day column shows before "+N more".
+const MAX_CHIPS = 3;
+
+// Plain text of a post for a one-line chip.
+const plain = (content: string | null) =>
+  (content || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+
+// Formats a time in the user's timezone. Falls back to plain dayjs where the
+// timezone plugin is not loaded (tests).
+const timeOf = (iso: string) => {
+  try {
+    return dayjs(iso).tz(getTimezone()).format('HH:mm');
+  } catch {
+    return dayjs(iso).format('HH:mm');
+  }
 };
 
 export const ScheduleTimeline: FC<ScheduleTimelineProps> = ({ upcomingPosts = [] }) => {
@@ -42,7 +46,9 @@ export const ScheduleTimeline: FC<ScheduleTimelineProps> = ({ upcomingPosts = []
   const postsByDay = useMemo(() => {
     const map = new Map<string, UpcomingPost[]>();
     if (!upcomingPosts) return map;
-    for (const post of upcomingPosts) {
+    for (const post of [...upcomingPosts].sort(
+      (a, b) => dayjs(a.publishDate).valueOf() - dayjs(b.publishDate).valueOf()
+    )) {
       const day = dayjs(post.publishDate).format('YYYY-MM-DD');
       if (!map.has(day)) map.set(day, []);
       map.get(day)!.push(post);
@@ -64,51 +70,82 @@ export const ScheduleTimeline: FC<ScheduleTimelineProps> = ({ upcomingPosts = []
   }
 
   return (
-    <div className="flex gap-[8px] overflow-x-auto pb-[8px]">
-      {schedule.days.map((day) => {
+    <div className="grid grid-cols-7 tablet:flex tablet:overflow-x-auto gap-[8px] pb-[4px]">
+      {schedule.days.map((day, index) => {
+        const isToday = index === 0;
         const isGap = schedule.gaps.includes(day.date);
         const dayPosts = postsByDay.get(day.date) ?? [];
-        const label = dayjs(day.date).format(t('schedule_day_abbrev_format', 'ddd'));
-        const dateNum = dayjs(day.date).format(t('schedule_day_number_format', 'D'));
+        const label = `${dayjs(day.date).format(t('schedule_day_abbrev_format', 'ddd'))} ${dayjs(
+          day.date
+        ).format(t('schedule_day_number_format', 'D'))}`;
         return (
           <div
             key={day.date}
-            className={`shrink-0 w-[120px] mobile:w-[100px] rounded-[10px] border p-[10px] flex flex-col gap-[8px] ${
-              isGap ? 'border-amber-500/40 bg-amber-500/5' : 'border-newTableBorder bg-newTableHeader'
+            data-testid={`schedule-day-${day.date}`}
+            className={`min-w-0 tablet:shrink-0 tablet:w-[120px] rounded-[10px] border p-[6px] flex flex-col gap-[6px] min-h-[200px] ${
+              isToday
+                ? 'border-btnPrimaryAccent/40 bg-boxFocused/60'
+                : 'border-newTableBorder bg-newTableHeader/60'
             }`}
           >
-            <div className="flex items-baseline justify-between">
-              <span className="text-[12px] font-medium text-textColor">{label}</span>
-              <span className="text-[16px] font-semibold text-textColor">{dateNum}</span>
+            <div
+              className={`text-center text-[12px] font-[700] rounded-[6px] py-[4px] ${
+                isToday ? 'bg-btnPrimary text-white' : 'text-textColor'
+              }`}
+            >
+              {label}
             </div>
-            <div className="text-[24px] font-semibold text-textColor leading-none">
-              {day.count}
-            </div>
-            <div className="text-[11px] text-newTableText">
-              {day.count === 1 ? t('post_lower', 'post') : t('posts_lower', 'posts')}
+            <div className="text-center text-[11px] text-newTableText">
+              {day.count === 0
+                ? t('nothing_yet', 'Nothing yet')
+                : day.count === 1
+                  ? t('one_post', '1 post')
+                  : t('n_posts', '{{count}} posts', { count: day.count })}
             </div>
 
-            <div className="flex flex-col gap-[6px] min-h-[44px]">
-              {dayPosts.slice(0, 2).map((post) => (
-                // The chip holds a real post id, so it opens that post.
-                <button
-                  key={post.id}
-                  type="button"
-                  onClick={() => router.push(`/posts?post=${post.id}`)}
-                  className="flex items-center gap-[6px] text-[11px] text-newTableText hover:text-textColor transition-colors text-start w-full min-w-0"
-                  title={post.content ?? undefined}
-                >
+            {dayPosts.slice(0, MAX_CHIPS).map((post) => (
+              // The chip holds a real post id, so it opens that post.
+              <button
+                key={post.id}
+                type="button"
+                onClick={() => router.push(`/posts?post=${post.id}`)}
+                className="bg-newBgColorInner border border-newTableBorder rounded-[8px] px-[6px] py-[6px] text-start hover:border-btnPrimaryAccent/50 transition-colors min-w-0"
+                title={plain(post.content) || undefined}
+              >
+                <span className="flex items-center gap-[5px] min-w-0">
                   <ChannelAvatar
                     identifier={post.providerIdentifier ?? undefined}
                     name={post.channelName ?? undefined}
-                    size={16}
+                    size={14}
                   />
-                  <span className="truncate">{post.content || t('untitled', 'Untitled')}</span>
-                </button>
-              ))}
-            </div>
+                  <span className="text-[11.5px] font-[700] text-textColor tabular-nums">
+                    {timeOf(post.publishDate)}
+                  </span>
+                </span>
+                <span className="block text-[10.5px] text-newTableText truncate mt-[2px]">
+                  {plain(post.content) || t('untitled', 'Untitled')}
+                </span>
+              </button>
+            ))}
+            {dayPosts.length > MAX_CHIPS && (
+              <button
+                type="button"
+                onClick={() => router.push('/posts?display=week')}
+                className="text-[11px] font-[600] text-btnPrimaryAccent hover:underline"
+              >
+                {t('n_more', '+{{count}} more', { count: dayPosts.length - MAX_CHIPS })}
+              </button>
+            )}
 
-            {isGap && <ComposerFillButton date={day.date} />}
+            {(isGap || day.count === 0) && (
+              <button
+                type="button"
+                onClick={() => router.push(`/posts/post?date=${day.date}T10:00:00`)}
+                className="mt-auto text-[11.5px] font-[600] text-btnPrimaryAccent hover:underline py-[6px]"
+              >
+                + {t('add_post', 'Add Post')}
+              </button>
+            )}
           </div>
         );
       })}

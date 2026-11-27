@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import dayjs from 'dayjs';
 import { useIntegrationList } from '@postmill-ai/frontend/components/launches/helpers/use.integration.list';
 import { useOverview } from '@postmill-ai/frontend/components/analytics/hooks/useOverview';
@@ -8,7 +8,7 @@ import { useDashboardSummary } from './hooks/useDashboardSummary';
 import { LineChart } from '@postmill-ai/frontend/components/analytics/charts/line.chart';
 import { EmptyState } from '@postmill-ai/frontend/components/analytics/kit/states';
 import { DashboardSetup } from './dashboard.setup';
-import { SectionCard } from './kit/section-card';
+import { SectionCard, SectionCardGate } from './kit/section-card';
 import { DashboardHeader } from './dashboard.header';
 import { DashboardSectionMeta } from './customize.popover';
 import { greetingForUser } from './dashboard.utils';
@@ -22,6 +22,7 @@ import { RecommendationsStrip } from './widgets/recommendations.strip';
 import { AttentionFeed } from './widgets/attention.feed';
 import { useAiActive } from '@postmill-ai/frontend/components/layout/use-ai-active';
 import { DailyBrief } from './widgets/daily.brief';
+import { ChannelsWidget } from './widgets/channels.widget';
 import { useT } from '@postmill-ai/react/translation/get.transation.service.client';
 import { useAttention } from './hooks/useAttention';
 import { useMediaJobs } from './hooks/useMediaJobs';
@@ -31,7 +32,6 @@ import { ANALYTICS_USAGE_HREF, MEDIA_QUEUE_HREF } from './destinations';
 export { greetingForUser };
 
 export const DashboardComponent = () => {
-  const [briefOpen, setBriefOpen] = useState(false);
   const aiActive = useAiActive();
   const t = useT();
   const { data: summary, isLoading: summaryLoading } = useDashboardSummary();
@@ -71,6 +71,11 @@ export const DashboardComponent = () => {
         permission: ['posts', 'read'],
       },
       { id: 'inbox', label: t('inbox', 'Inbox'), permission: ['comments', 'read'] },
+      {
+        id: 'channels',
+        label: t('channels', 'Channels'),
+        permission: ['channels', 'read'],
+      },
       {
         id: 'media',
         label: t('media_queue', 'Media queue'),
@@ -121,69 +126,67 @@ export const DashboardComponent = () => {
 
   const hasOverview = !!overviewData && series.length > 0;
 
+  const scrollToBrief = () =>
+    document.getElementById('daily-brief')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
   return (
-    <div className="p-[16px] mobile:p-[24px] overflow-x-hidden">
+    <div className="px-[32px] pt-[28px] pb-[32px] mobile:p-[16px] overflow-x-hidden w-full">
       <DashboardHeader
         sections={DASHBOARD_SECTIONS}
         showBriefButton={aiActive === true}
-        onBriefClick={() => setBriefOpen((o) => !o)}
+        onBriefClick={scrollToBrief}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-[12px]">
-        <div className="lg:col-span-12 order-first lg:order-1">
-          <DailyBrief open={briefOpen} onOpenChange={setBriefOpen} />
-        </div>
-
-        <div className="lg:col-span-12 order-first lg:order-1">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-[16px] mobile:gap-[12px]">
+        <div className="lg:col-span-12">
           <DashboardSetup />
         </div>
 
-        <div className="lg:col-span-12 order-1 lg:order-2">
-          <SectionCard
-            id="attention"
-            title={t('needs_attention', 'Needs attention')}
-            badge={attention?.items?.length}
-          >
-            <AttentionFeed />
-          </SectionCard>
+        <div className="lg:col-span-12">
+          <SectionCardGate id="kpi" permission={['analytics', 'read']}>
+            <KpiStrip from={from} to={to} integrationIds={activeIntegrationIds} />
+          </SectionCardGate>
         </div>
 
-        <div className="lg:col-span-12 order-2 lg:order-5">
+        <div className="lg:col-span-8 order-2 lg:order-none">
           <SectionCard
             id="schedule"
-            title={t('next_7_days', 'Next 7 days')}
-            viewAllHref="/posts"
+            title={t('this_week', 'This Week')}
+            subtitle={t('this_week_sub', 'Scheduled posts by day, starting today')}
+            viewAllHref="/posts?display=week"
+            viewAllLabel={t('open_calendar', 'Open Calendar')}
             permission={['posts', 'read']}
+            className="h-full"
           >
             {summaryLoading ? (
-              <div className="animate-pulse h-[40px] bg-newTableHeader rounded-[4px]" />
+              <div className="animate-pulse h-[200px] bg-newTableHeader rounded-[10px]" />
             ) : (
               <ScheduleTimeline upcomingPosts={summary?.upcomingPosts ?? []} />
             )}
           </SectionCard>
         </div>
 
-        <div className="lg:col-span-4 order-3 lg:order-3">
+        <div className="lg:col-span-4 order-1 lg:order-none">
           <SectionCard
-            id="kpi"
-            title={t('kpi_at_a_glance', 'At a glance')}
-            viewAllHref="/analytics"
-            permission={['analytics', 'read']}
+            id="attention"
+            title={t('needs_attention_title', 'Needs Attention')}
+            subtitle={t('needs_attention_sub', 'Only items that need a decision from you')}
+            badge={attention?.items?.length}
+            className="h-full"
           >
-            <KpiStrip
-              from={from}
-              to={to}
-              integrationIds={activeIntegrationIds}
-            />
+            <AttentionFeed />
           </SectionCard>
         </div>
 
-        <div className="lg:col-span-8 order-4 lg:order-4">
+        <div className="lg:col-span-8 order-4 lg:order-none">
           <SectionCard
             id="trend"
-            title={t('trend_title', '7-day engagement')}
+            title={t('engagement_title', 'Engagement')}
+            subtitle={t('engagement_sub', 'Likes, comments and shares per day · last 7 days')}
             viewAllHref="/analytics"
+            viewAllLabel={t('open_analytics', 'Open Analytics')}
             permission={['analytics', 'read']}
+            className="h-full"
           >
             {overviewLoading ? (
               <div className="h-[240px] bg-newTableHeader rounded-[12px] animate-pulse" />
@@ -203,60 +206,93 @@ export const DashboardComponent = () => {
           </SectionCard>
         </div>
 
-        <div className="lg:col-span-6 order-6 lg:order-6">
+        <div className="lg:col-span-4 order-3 lg:order-none">
+          <DailyBrief variant="card" />
+        </div>
+
+        <div className="lg:col-span-4 order-5 lg:order-none">
           <SectionCard
-            id="campaigns"
-            title={t('active_campaigns', 'Active campaigns')}
-            viewAllHref="/campaigns"
-            permission={['posts', 'read']}
+            id="channels"
+            title={t('channels', 'Channels')}
+            subtitle={t('channels_sub', 'Where your posts go')}
+            viewAllHref="/settings/channels"
+            viewAllLabel={t('manage', 'Manage')}
+            permission={['channels', 'read']}
+            className="h-full"
           >
-            <CampaignsWidget />
+            <ChannelsWidget />
           </SectionCard>
         </div>
 
-        <div className="lg:col-span-6 order-5 lg:order-6">
+        <div className="lg:col-span-4 order-6 lg:order-none">
           <SectionCard
             id="inbox"
             title={t('inbox', 'Inbox')}
+            subtitle={t('inbox_card_sub', 'Latest replies across channels')}
             badge={summary?.commentUnreadCount}
             viewAllHref="/replies"
+            viewAllLabel={t('open_inbox', 'Open Inbox')}
             permission={['comments', 'read']}
+            className="h-full"
           >
             <InboxWidget />
           </SectionCard>
         </div>
 
-        <div className="lg:col-span-6 order-7 lg:order-7">
+        <div className="lg:col-span-4 order-7 lg:order-none">
+          <SectionCard
+            id="campaigns"
+            title={t('active_campaigns_title', 'Active Campaigns')}
+            subtitle={t('active_campaigns_sub', 'Posts published against plan')}
+            viewAllHref="/campaigns"
+            viewAllLabel={t('all_campaigns', 'All Campaigns')}
+            permission={['posts', 'read']}
+            className="h-full"
+          >
+            <CampaignsWidget />
+          </SectionCard>
+        </div>
+
+        <div className="lg:col-span-4 order-8 lg:order-none">
+          <SectionCard
+            id="recommendations"
+            title={t('recommendations_label', 'Recommendations')}
+            subtitle={t('recommendations_sub', 'Suggested by Postmill from your results')}
+            viewAllHref="/analytics?tab=insights"
+            viewAllLabel={t('all', 'All')}
+            permission={['posts', 'read']}
+            className="h-full"
+          >
+            <RecommendationsStrip />
+          </SectionCard>
+        </div>
+
+        <div className="lg:col-span-4 order-9 lg:order-none">
           <SectionCard
             id="media"
-            title={t('media_queue', 'Media queue')}
+            title={t('media_queue_title', 'Media Queue')}
+            subtitle={t('media_queue_sub', 'Images and videos being made')}
             badge={mediaJobs?.counts?.failed7d}
             viewAllHref={MEDIA_QUEUE_HREF}
+            viewAllLabel={t('open_queue', 'Open Queue')}
             permission={['media', 'read']}
+            className="h-full"
           >
             <MediaQueueWidget />
           </SectionCard>
         </div>
 
-        <div className="lg:col-span-6 order-8 lg:order-7">
+        <div className="lg:col-span-4 order-10 lg:order-none">
           <SectionCard
             id="usage"
-            title={t('usage_budget', 'Usage & budget')}
+            title={t('ai_spend_title', 'AI Spend')}
+            subtitle={t('ai_spend_sub', 'Against your monthly and daily caps')}
             viewAllHref={ANALYTICS_USAGE_HREF}
+            viewAllLabel={t('usage', 'Usage')}
             permission={['billing', 'read']}
+            className="h-full"
           >
             <UsageWidget />
-          </SectionCard>
-        </div>
-
-        <div className="lg:col-span-12 order-9 lg:order-8">
-          <SectionCard
-            id="recommendations"
-            title={t('recommendations_label', 'Recommendations')}
-            viewAllHref="/analytics?tab=insights"
-            permission={['posts', 'read']}
-          >
-            <RecommendationsStrip />
           </SectionCard>
         </div>
       </div>

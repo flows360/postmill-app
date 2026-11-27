@@ -53,7 +53,7 @@ describe('SectionCard', () => {
     expect(screen.getByTestId('icon')).toBeTruthy();
     expect(screen.getByText('5')).toBeTruthy();
     expect(screen.getByTestId('child')).toBeTruthy();
-    expect(screen.getByText('View all').getAttribute('href')).toBe('/test');
+    expect(screen.getByText(/View all/).getAttribute('href')).toBe('/test');
   });
 
   it('returns null when its id is hidden in dashboard_prefs', () => {

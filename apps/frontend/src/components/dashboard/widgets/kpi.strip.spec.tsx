@@ -28,6 +28,10 @@ vi.mock('../hooks/useDashboardSummary', () => ({
   useDashboardSummary: vi.fn(),
 }));
 
+vi.mock('../hooks/useSchedule', () => ({
+  useSchedule: () => ({ data: { days: [{ date: '2024-01-07', count: 2 }, { date: '2024-01-08', count: 0 }], gaps: [] } }),
+}));
+
 vi.mock('@postmill-ai/frontend/components/analytics/hooks/useOverview', () => ({
   useOverview: vi.fn(),
 }));
@@ -73,20 +77,17 @@ describe('KpiStrip', () => {
     mockUseOverview.mockReturnValue({ data: undefined, isLoading: true });
   });
 
-  it('renders skeleton placeholders while loading', () => {
+  it('shows the four tiles with loading placeholders', () => {
     render(<KpiStrip {...defaultProps} />);
 
-    expect(screen.getByText('Engagement (7d)')).toBeTruthy();
-    expect(screen.getByText('Published (7d)')).toBeTruthy();
     expect(screen.getByText('Scheduled')).toBeTruthy();
-    expect(screen.getByText('Unread replies')).toBeTruthy();
-    expect(screen.getByText('Channels')).toBeTruthy();
-
-    const pulses = document.querySelectorAll('.animate-pulse');
-    expect(pulses.length).toBe(2);
+    expect(screen.getByText('Published')).toBeTruthy();
+    expect(screen.getByText('Engagement')).toBeTruthy();
+    expect(screen.getByText('Unread Replies')).toBeTruthy();
+    expect(document.querySelectorAll('.animate-pulse').length).toBe(4);
   });
 
-  it('renders expected content and values when data is loaded', () => {
+  it('renders the values, today count, channel count and engagement line', () => {
     mockUseDashboardSummary.mockReturnValue({
       data: {
         publishedNext7: 12,
@@ -97,95 +98,61 @@ describe('KpiStrip', () => {
       isLoading: false,
     });
     mockUseOverview.mockReturnValue({
-      data: { kpis: [makeKpi({ total: 1234, percentageChange: 5.5, sparkline: [{ date: '2024-01-01', value: 1 }, { date: '2024-01-02', value: 2 }] })] },
+      data: { kpis: [makeKpi({ total: 1234, sparkline: [{ date: '2024-01-01', value: 1 }, { date: '2024-01-02', value: 2 }] })] },
       isLoading: false,
     });
 
     render(<KpiStrip {...defaultProps} />);
 
-    expect(screen.getByText('Engagement (7d)')).toBeTruthy();
-    expect(screen.getByText('1.2K')).toBeTruthy();
-    expect(screen.getByText('Published (7d)')).toBeTruthy();
-    expect(screen.getByText('12')).toBeTruthy();
-    expect(screen.getByText('Scheduled')).toBeTruthy();
-    expect(screen.getByText('34')).toBeTruthy();
-    expect(screen.getByText('Unread replies')).toBeTruthy();
-    expect(screen.getByText('5')).toBeTruthy();
-    expect(screen.getByText('Channels')).toBeTruthy();
-    expect(screen.getByText('7')).toBeTruthy();
-
+    expect(within(screen.getByTestId('kpi-tile-engagement')).getByText('1.2K')).toBeTruthy();
+    expect(within(screen.getByTestId('kpi-tile-published')).getByText('12')).toBeTruthy();
+    expect(within(screen.getByTestId('kpi-tile-scheduled')).getByText('34')).toBeTruthy();
+    expect(within(screen.getByTestId('kpi-tile-unread')).getByText('5')).toBeTruthy();
+    expect(screen.getByText('2 today')).toBeTruthy();
+    expect(screen.getByText('Across 7 channels')).toBeTruthy();
+    expect(screen.getByTestId('kpi-sparkline')).toBeTruthy();
+    expect(screen.getByTestId('kpi-day-bars')).toBeTruthy();
     expect(document.querySelectorAll('.animate-pulse').length).toBe(0);
-    expect(screen.getAllByTestId('area-chart').length).toBe(1);
   });
 
-  it('falls back to integration count when channel count is missing from summary', () => {
+  it('falls back to the integration count when the summary has no channel count', () => {
     mockUseDashboardSummary.mockReturnValue({
-      data: {
-        publishedNext7: 0,
-        scheduledPosts: 0,
-        commentUnreadCount: 0,
-      },
+      data: { publishedNext7: 0, scheduledPosts: 0, commentUnreadCount: 0 },
       isLoading: false,
     });
-    mockUseOverview.mockReturnValue({
-      data: { kpis: [] },
-      isLoading: false,
-    });
+    mockUseOverview.mockReturnValue({ data: { kpis: [] }, isLoading: false });
 
     render(<KpiStrip {...defaultProps} />);
 
-    expect(screen.getByText('Channels')).toBeTruthy();
-    expect(screen.getByText('3')).toBeTruthy();
+    expect(screen.getByText('Across 3 channels')).toBeTruthy();
   });
 
-  it('renders zero-state engagement when overview is unavailable', () => {
+  it('shows zero engagement when the overview is unavailable', () => {
     mockUseDashboardSummary.mockReturnValue({
-      data: {
-        publishedNext7: 0,
-        scheduledPosts: 0,
-        commentUnreadCount: 0,
-        channelsConnected: 0,
-      },
+      data: { publishedNext7: 0, scheduledPosts: 0, commentUnreadCount: 0, channelsConnected: 0 },
       isLoading: false,
     });
-    mockUseOverview.mockReturnValue({
-      data: undefined,
-      isLoading: false,
-    });
+    mockUseOverview.mockReturnValue({ data: undefined, isLoading: false });
 
     render(<KpiStrip {...defaultProps} />);
 
-    const tile = screen.getByTestId('kpi-tile-Engagement (7d)');
-    expect(tile).toBeTruthy();
-    expect(within(tile).getByText('0')).toBeTruthy();
+    expect(within(screen.getByTestId('kpi-tile-engagement')).getByText('0')).toBeTruthy();
   });
 
   it('makes every tile open the page that explains its number', () => {
     mockUseDashboardSummary.mockReturnValue({
-      data: {
-        publishedNext7: 1,
-        scheduledPosts: 2,
-        commentUnreadCount: 3,
-        channelsConnected: 4,
-      },
+      data: { publishedNext7: 1, scheduledPosts: 2, commentUnreadCount: 3, channelsConnected: 4 },
       isLoading: false,
     });
-    mockUseOverview.mockReturnValue({
-      data: { kpis: [makeKpi()] },
-      isLoading: false,
-    });
+    mockUseOverview.mockReturnValue({ data: { kpis: [makeKpi()] }, isLoading: false });
 
     render(<KpiStrip {...defaultProps} />);
 
-    const tile = screen.getByTestId('kpi-tile-Engagement (7d)');
-    expect(within(tile).getByText('1.2K')).toBeTruthy();
-
-    fireEvent.click(tile.querySelector('[role="button"]')!);
+    fireEvent.click(screen.getByTestId('kpi-tile-engagement'));
     expect(mockPush).toHaveBeenCalledWith('/analytics');
-
-    fireEvent.click(
-      screen.getByTestId('kpi-tile-Unread replies').querySelector('[role="button"]')!
-    );
+    fireEvent.click(screen.getByTestId('kpi-tile-unread'));
     expect(mockPush).toHaveBeenCalledWith('/replies?unreadOnly=true');
+    fireEvent.click(screen.getByTestId('kpi-tile-scheduled'));
+    expect(mockPush).toHaveBeenCalledWith('/posts?display=week');
   });
 });

@@ -123,41 +123,40 @@ describe('DashboardComponent shell', () => {
     });
   });
 
-  it('renders the header, setup, attention, kpi, trend, schedule, campaigns, inbox, media, usage, and recommendations sections', () => {
+  it('renders the header, setup, tiles, week, attention, engagement, channels, inbox, campaigns, recommendations, media and AI spend', () => {
     render(<DashboardComponent />);
 
     expect(screen.getByText(/Rick/)).toBeTruthy();
     expect(screen.getByLabelText('Customize dashboard')).toBeTruthy();
     expect(screen.getByText('Welcome to Postmill')).toBeTruthy();
-    expect(screen.getByText('Needs attention')).toBeTruthy();
-    expect(screen.getByText('At a glance')).toBeTruthy();
-    expect(screen.getByText('7-day engagement')).toBeTruthy();
-    expect(screen.getByText('Next 7 days')).toBeTruthy();
-    expect(screen.getByText('Active campaigns')).toBeTruthy();
-    expect(screen.getByText('Inbox')).toBeTruthy();
-    expect(screen.getByText('Media queue')).toBeTruthy();
-    expect(screen.getByText('Usage & budget')).toBeTruthy();
+    expect(screen.getByText('Needs Attention')).toBeTruthy();
+    expect(screen.getByText('Unread Replies')).toBeTruthy();
+    expect(screen.getByText('This Week')).toBeTruthy();
+    expect(screen.getByText('Likes, comments and shares per day · last 7 days')).toBeTruthy();
+    expect(screen.getByText('Channels')).toBeTruthy();
+    expect(screen.getByText('Latest replies across channels')).toBeTruthy();
+    expect(screen.getByText('Active Campaigns')).toBeTruthy();
+    expect(screen.getByText('Media Queue')).toBeTruthy();
+    expect(screen.getByText('AI Spend')).toBeTruthy();
     expect(screen.getByText('Recommendations')).toBeTruthy();
   });
 
   it('hides a section when its id is in dashboard_prefs', () => {
     localStorage.setItem('dashboard_prefs', JSON.stringify({ hidden: ['kpi'], v: 1 }));
     render(<DashboardComponent />);
-
-    expect(screen.queryByText('At a glance')).toBeNull();
-    expect(screen.getByText('7-day engagement')).toBeTruthy();
+    expect(screen.queryByText('Unread Replies')).toBeNull();
+    expect(screen.getByText('This Week')).toBeTruthy();
   });
 
   it('hides billing/media sections for a viewer-role member', () => {
     mockPermissions.hasPermission.mockImplementation(
       (resource: string) => resource === 'analytics' || resource === 'posts'
     );
-
     render(<DashboardComponent />);
-
-    expect(screen.getByText('At a glance')).toBeTruthy();
-    expect(screen.getByText('Next 7 days')).toBeTruthy();
-    expect(screen.queryByText('Usage & budget')).toBeNull();
-    expect(screen.queryByText('Media queue')).toBeNull();
+    expect(screen.getByText('Unread Replies')).toBeTruthy();
+    expect(screen.getByText('This Week')).toBeTruthy();
+    expect(screen.queryByText('AI Spend')).toBeNull();
+    expect(screen.queryByText('Media Queue')).toBeNull();
+    expect(screen.queryByText('Channels')).toBeNull();
   });
 });

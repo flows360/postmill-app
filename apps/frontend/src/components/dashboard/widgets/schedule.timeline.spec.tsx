@@ -7,7 +7,8 @@ import { ScheduleTimeline } from './schedule.timeline';
 const mockPush = vi.fn();
 
 vi.mock('@postmill-ai/react/translation/get.transation.service.client', () => ({
-  useT: () => (_key: string, fallback: string) => fallback,
+  useT: () => (_key: string, fallback: string, vars?: Record<string, unknown>) =>
+    vars ? fallback.replace(/{{\s*(\w+)\s*}}/g, (_m, k) => String(vars[k])) : fallback,
 }));
 
 vi.mock('next/navigation', () => ({
@@ -130,21 +131,13 @@ describe('ScheduleTimeline', () => {
       />
     );
 
-    // Day labels and numbers
-    expect(screen.getByText('Mon')).toBeTruthy();
-    expect(screen.getByText('6')).toBeTruthy();
-    expect(screen.getByText('Tue')).toBeTruthy();
-    expect(screen.getByText('7')).toBeTruthy();
+    // Day labels and counts
+    expect(screen.getByText('Mon 6')).toBeTruthy();
+    expect(screen.getByText('Tue 7')).toBeTruthy();
+    expect(screen.getByText('2 posts')).toBeTruthy();
+    expect(screen.getByText('1 post')).toBeTruthy();
 
-    // Post counts
-    expect(screen.getByText('2')).toBeTruthy();
-    expect(screen.getByText('1')).toBeTruthy();
-
-    // Pluralization
-    expect(screen.getByText('posts')).toBeTruthy();
-    expect(screen.getByText('post')).toBeTruthy();
-
-    // Post rows (only first two per day)
+    // Post rows
     expect(screen.getByText('First post')).toBeTruthy();
     expect(screen.getByText('Untitled')).toBeTruthy();
     expect(screen.getByText('Solo post')).toBeTruthy();
@@ -184,7 +177,7 @@ describe('ScheduleTimeline', () => {
     expect(mockPush).toHaveBeenCalledWith('/posts?post=post-1');
   });
 
-  it('highlights gap days and navigates to the composer when Fill is clicked', () => {
+  it('offers Add Post on empty days and opens the composer for that day', () => {
     (useSWR as ReturnType<typeof vi.fn>).mockReturnValue({
       data: {
         days: [{ date: '2026-07-08', count: 0 }],
@@ -197,7 +190,8 @@ describe('ScheduleTimeline', () => {
 
     render(<ScheduleTimeline />);
 
-    const fillButton = screen.getByRole('button', { name: 'Fill' });
+    expect(screen.getByText('Nothing yet')).toBeTruthy();
+    const fillButton = screen.getByRole('button', { name: '+ Add Post' });
     expect(fillButton).toBeTruthy();
 
     fireEvent.click(fillButton);
