@@ -1,8 +1,6 @@
 'use client';
 
 import React, { ReactNode, useCallback, useState, useRef, useEffect } from 'react';
-import { Logo } from '@postmill-ai/frontend/components/new-layout/logo';
-import { Wordmark } from '@postmill-ai/frontend/components/new-layout/wordmark';
 import { UserAvatarMenu } from '@postmill-ai/frontend/components/new-layout/user-avatar-menu';
 import { jakartaSans } from '@postmill-ai/frontend/components/new-layout/jakarta-sans';
 const ModeComponent = dynamic(
@@ -50,7 +48,11 @@ import { useModals } from '@postmill-ai/frontend/components/layout/new-modal';
 import { useAddProvider } from '@postmill-ai/frontend/components/launches/add.provider.component';
 import { usePreferredLanguageSync } from '@postmill-ai/frontend/components/layout/use-preferred-language-sync';
 import { QuickJump } from '@postmill-ai/frontend/components/new-layout/quick-jump';
-import { PageIntro } from '@postmill-ai/frontend/components/new-layout/page-intro';
+import { PageIntro, hasPageHeading } from '@postmill-ai/frontend/components/new-layout/page-intro';
+
+// Real Flows360 logo (the CSP allows https images).
+const FLOWS360_LOGO =
+  'https://www.flows360.co/wp-content/uploads/2026/03/cropped-1c.-Full-Colour-Logo-2000pxl-NoBackGround-PNG-300x88.png';
 
 // Lazy — only loaded when "New Campaign" is actually chosen (keeps the campaign-modal
 // dependency graph out of the global layout bundle).
@@ -112,9 +114,6 @@ export const LayoutComponent = ({ children }: { children: ReactNode }) => {
 
   const router = useRouter();
   const pathname = usePathname();
-  // The header wordmark shows ONLY on the dashboard route (other pages show their
-  // own <Title/> in the header instead).
-  const isDashboard = pathname === '/dashboard';
   // Only gate once `user` has loaded. `!user?.setupCompleted` is truthy while the
   // SWR request is still in flight (user === undefined), which would redirect to
   // /setup on every reload before we even know the real value.
@@ -213,9 +212,8 @@ export const LayoutComponent = ({ children }: { children: ReactNode }) => {
                       >
                         <div className="flex flex-col h-full gap-[22px] flex-1 pt-[22px] pb-[16px] px-[12px] overflow-y-auto">
                           <Link href="/" aria-label={t('home', 'Home')} className="flex flex-col gap-[8px] px-[12px] shrink-0">
-                            {/* Real Flows360 logo; the CSP allows https images. */}
                             <img
-                              src="https://www.flows360.co/wp-content/uploads/2026/03/cropped-1c.-Full-Colour-Logo-2000pxl-NoBackGround-PNG-300x88.png"
+                              src={FLOWS360_LOGO}
                               alt="Flows360"
                               width={128}
                               height={38}
@@ -232,39 +230,28 @@ export const LayoutComponent = ({ children }: { children: ReactNode }) => {
                       </div>
                     </div>
                     <div className="flex-1 min-w-0 bg-newBgColor overflow-hidden flex flex-col blurMe">
-                      <div className="flex bg-newBgColorInner h-[56px] px-[28px] items-center gap-[16px] border-b border-newTableBorder">
+                      <div className="flex bg-newBgColorInner h-[56px] px-[28px] mobile:px-[16px] items-center gap-[16px] mobile:gap-[10px] border-b border-newTableBorder">
                         <div className="mobile:hidden flex flex-1 items-center min-w-0">
                           <QuickJump />
                         </div>
-                        <div className="text-[24px] font-[600] hidden mobile:flex flex-1 items-center gap-[10px] min-w-0">
-                          {/* Mobile: the left rail is hidden, so always show the
-                              icon; add the wordmark only on the dashboard. */}
-                          <Link
-                            href="/"
-                            aria-label={t('home', 'Home')}
-                            className="mobile:flex hidden items-center gap-[8px] shrink-0"
-                          >
-                            <Logo size={34} className="" />
-                            {isDashboard && (
-                              <Wordmark height={26} className="text-textColor" />
-                            )}
+                        {/* Mobile: the left rail is hidden, so show the Flows360
+                            logo here. The page title is added only where the page
+                            has no heading of its own. */}
+                        <div className="hidden mobile:flex flex-1 items-center gap-[12px] min-w-0">
+                          <Link href="/" aria-label={t('home', 'Home')} className="flex shrink-0">
+                            <img
+                              src={FLOWS360_LOGO}
+                              alt="Flows360"
+                              width={96}
+                              height={28}
+                              className="w-[96px] h-auto dark:brightness-0 dark:invert"
+                            />
                           </Link>
-                          {/* Desktop: the icon lives in the left rail; show the
-                              wordmark only on the dashboard (other pages show the
-                              <Title/> instead). */}
-                          {isDashboard && (
-                            <Link
-                              href="/"
-                              aria-label={t('home', 'Home')}
-                              className="mobile:hidden flex shrink-0"
-                            >
-                              <Wordmark height={34} className="text-textColor" />
-                            </Link>
+                          {!hasPageHeading(pathname) && (
+                            <div className="text-[18px] font-[600] truncate min-w-0">
+                              <Title />
+                            </div>
                           )}
-                          {/* The dashboard header already shows the wordmark; the
-                              page Title (which resolves to "Home" for /dashboard)
-                              would be redundant, so it's shown only off-dashboard. */}
-                          {!isDashboard && <Title />}
                         </div>
                         <div className="flex gap-[14px] text-textItemBlur items-center">
                           {/* Secondary utilities collapse into the avatar menu on mobile. */}

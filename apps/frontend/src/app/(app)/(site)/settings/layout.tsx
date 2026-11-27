@@ -189,7 +189,8 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
       </div>
 
       <div className="bg-newBgColor flex-1 flex-col flex min-w-0 mobile:p-0 px-[28px] pt-[26px] pb-[28px] gap-[12px] h-[calc(100vh-56px)] mobile:h-auto min-h-0 overflow-y-auto mobile:overflow-visible">
-        <div className="hidden mobile:block">
+        {/* The Settings page lists every section, so the strip is only for sub-pages. */}
+        <div className={clsx('hidden', pathname !== '/settings' && 'mobile:block')}>
           <SubmenuStrip
             ariaLabel={t('settings_sections_aria', 'Settings sections')}
             overflowLabel={t('more_settings_sections', 'More settings')}

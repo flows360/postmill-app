@@ -629,8 +629,9 @@ export const FileManager: FC<{
             and drop zone. */}
         {standalone && (
           <PageHeader
-            title={t('file_library', 'File Library')}
-            description={t('manage_your_images_videos_and_files', 'Manage your images, videos, and files')}
+            title={t('library', 'Library')}
+            description={t('library_intro', 'Reusable assets and their publishing history.')}
+            large
             action={
               <FileUploader
                 folderId={selectedFolderId}

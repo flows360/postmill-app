@@ -4,9 +4,16 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import { useVariables } from '@postmill-ai/react/helpers/variable.context';
 import { useT } from '@postmill-ai/react/translation/get.transation.service.client';
 
+// Pages that show their own heading (from PageIntro or from the page itself),
+// so the mobile header does not repeat the title.
+export const hasPageHeading = (pathname: string) =>
+  ['/dashboard', '/posts', '/campaigns', '/analytics', '/replies', '/media', '/settings'].includes(pathname) ||
+  pathname.startsWith('/files') ||
+  pathname.startsWith('/settings/');
+
 // Page title and subtitle above the main list pages, as in the Flows360
 // publishing design. Detail pages, settings (which has its own heading) and
-// pages that already carry a title are left alone.
+// pages that already carry a title (Inbox, Library) are left alone.
 export const PageIntro = () => {
   const t = useT();
   const pathname = usePathname() || '';
@@ -28,12 +35,7 @@ export const PageIntro = () => {
         return [t('campaigns', 'Campaigns'), t('campaigns_intro', 'Plan and measure every campaign in one place.')];
       case '/analytics':
         return [t('analytics', 'Analytics'), t('analytics_intro', 'Find what worked and open the source post.')];
-      case '/replies':
-        return [t('inbox', 'Inbox'), t('inbox_intro', 'Triage conversations with context.')];
       default:
-        if (pathname === '/files' || pathname.startsWith('/files/')) {
-          return [t('library', 'Library'), t('library_intro', 'Reusable assets and their publishing history.')];
-        }
         return null;
     }
   })();

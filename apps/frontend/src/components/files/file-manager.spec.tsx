@@ -205,15 +205,15 @@ describe('FileManager sidebar', () => {
     renderManager({ standalone: false, sidebarMode: 'drawer' });
 
     await waitFor(() => expect(screen.getAllByText('Folders').length).toBeGreaterThan(0));
-    expect(screen.queryByText('File Library')).toBeNull();
-    expect(screen.queryByText('Manage your images, videos, and files')).toBeNull();
+    expect(screen.queryByText('Library')).toBeNull();
+    expect(screen.queryByText('Reusable assets and their publishing history.')).toBeNull();
     expect(screen.queryByText(/Trash/)).toBeNull();
   });
 
   it('keeps page chrome on the standalone /files page', async () => {
     renderManager();
 
-    await waitFor(() => expect(screen.getByText('File Library')).toBeTruthy());
+    await waitFor(() => expect(screen.getByText('Library')).toBeTruthy());
     expect(screen.getByText(/Trash/)).toBeTruthy();
   });
 

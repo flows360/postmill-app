@@ -373,8 +373,9 @@ export const CommentInbox: FC = () => {
     <div className="flex flex-col gap-[16px] min-w-0">
       <PageHeader
         title={t('inbox', 'Inbox')}
-        description={t('inbox_description', 'Manage and respond to replies across channels')}
+        description={t('inbox_intro', 'Triage conversations with context.')}
         action={syncAction}
+        large
       />
 
       {filterBar}

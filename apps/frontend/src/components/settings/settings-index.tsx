@@ -38,7 +38,7 @@ const SettingsCard: React.FC<{
     className="group flex items-center gap-[12px] min-h-[46px] border-t border-newTableBorder py-[10px] hover:bg-boxHover transition-colors -mx-[8px] px-[8px] rounded-[6px]"
   >
     <span className="min-w-0 flex-1 flex flex-col gap-[3px]">
-      <span className="text-[14px] font-[600] text-textColor truncate">
+      <span className="text-[14px] font-[600] text-textColor truncate mobile:whitespace-normal">
         {t(item.labelKey, item.labelDefault)}
         <span className="font-[500] text-newTableText">{' · '}</span>
         <span className={clsx('font-[500]', status?.tone === 'attention' ? 'text-amber-700' : 'text-newTableText')}>
@@ -121,7 +121,7 @@ export const SettingsIndexComponent: React.FC = () => {
   const cardFor = (title: string, list: SettingsNavItem[]) => (
     <section
       key={title}
-      className="flex flex-col rounded-[12px] border border-newTableBorder bg-newBgColorInner px-[24px] pt-[22px] pb-[14px]"
+      className="flex flex-col rounded-[12px] border border-newTableBorder bg-newBgColorInner px-[24px] mobile:px-[16px] pt-[22px] mobile:pt-[18px] pb-[14px]"
     >
       <h2 className="text-[18px] font-[700] text-textColor mb-[14px]">{title}</h2>
       {list.map((item) => (

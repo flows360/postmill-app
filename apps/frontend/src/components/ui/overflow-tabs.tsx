@@ -174,7 +174,7 @@ export const OverflowTabs: FC<OverflowTabsProps> = ({
       'flex items-center gap-[8px] shrink-0 px-[14px] py-[8px] rounded-full text-[13px] font-[600] whitespace-nowrap transition-colors border',
       focusRing,
       active
-        ? 'bg-btnPrimary text-btnText border-btnPrimary'
+        ? 'bg-btnPrimary text-white border-btnPrimary'
         : 'bg-transparent text-textColor/70 border-newTableBorder hover:text-textColor'
     );
   };
