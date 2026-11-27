@@ -143,7 +143,7 @@ export const ScheduleTimeline: FC<ScheduleTimelineProps> = ({ upcomingPosts = []
                 onClick={() => router.push(`/posts/post?date=${day.date}T10:00:00`)}
                 className="mt-auto text-[11.5px] font-[600] text-btnPrimaryAccent hover:underline py-[6px]"
               >
-                + {t('add_post', 'Add Post')}
+                + {t('dashboard_add_post', 'Add Post')}
               </button>
             )}
           </div>

@@ -71,22 +71,20 @@ describe('RecommendationsStrip', () => {
 
     render(<RecommendationsStrip />);
 
-    expect(screen.getByText('High')).toBeTruthy();
-    expect(screen.getByText('Medium')).toBeTruthy();
-    expect(screen.getByText('Low')).toBeTruthy();
+    // Priority is a coloured dot plus a screen-reader label.
+    expect(screen.getByText(/High/)).toBeTruthy();
+    expect(screen.getByText(/Medium/)).toBeTruthy();
+    expect(screen.getByText(/Low/)).toBeTruthy();
 
     expect(screen.getByText('Post on Tuesday mornings')).toBeTruthy();
     expect(screen.getByText('Connect LinkedIn')).toBeTruthy();
     expect(screen.getByText('Engagement is down')).toBeTruthy();
 
-    expect(screen.getByText('Your audience is most active between 9am and 11am on Tuesdays.')).toBeTruthy();
+    expect(screen.getByText(/Your audience is most active between 9am and 11am on Tuesdays\./)).toBeTruthy();
 
     expect(screen.getByText('Schedule now')).toBeTruthy();
     expect(screen.getByText('Add channel')).toBeTruthy();
     expect(screen.getByText('View analytics')).toBeTruthy();
-
-    expect(screen.getByText('best time')).toBeTruthy();
-    expect(screen.getByText('channel gap')).toBeTruthy();
   });
 
   it('returns null when there are no recommendations', () => {
@@ -126,7 +124,7 @@ describe('RecommendationsStrip', () => {
     expect(mockPush).toHaveBeenCalledWith('/settings?tab=channels');
   });
 
-  it('limits the rendered cards to the first four recommendations', () => {
+  it('limits the list to the first three recommendations', () => {
     mockUseRecommendations.mockReturnValue({
       data: { recommendations: [...recommendations, ...recommendations] },
       isLoading: false,
@@ -134,7 +132,6 @@ describe('RecommendationsStrip', () => {
 
     render(<RecommendationsStrip />);
 
-    expect(screen.getAllByText(/Post on Tuesday mornings|Connect LinkedIn|Engagement is down/).length).toBeGreaterThanOrEqual(4);
-    expect(screen.getAllByRole('button').length).toBe(4);
+    expect(screen.getAllByRole('button').length).toBe(3);
   });
 });

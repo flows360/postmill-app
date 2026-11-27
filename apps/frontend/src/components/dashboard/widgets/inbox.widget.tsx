@@ -24,7 +24,14 @@ export const InboxWidget: FC = () => {
   const comments = data?.comments ?? [];
 
   if (isLoading) return <TabSkeleton variant="list" />;
-  if (!comments.length) return null;
+  if (!comments.length) {
+    return (
+      <EmptyState
+        title={t('inbox_empty_title', 'No new replies')}
+        description={t('inbox_empty_description', 'Replies from your channels will show here.')}
+      />
+    );
+  }
 
   return (
     <div className="flex flex-col gap-[8px]">

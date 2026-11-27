@@ -86,15 +86,15 @@ describe('InboxWidget', () => {
     expect(screen.getByTestId('tab-skeleton')).toBeTruthy();
   });
 
-  it('returns null when there are no unread comments', () => {
+  it('shows an empty state when there are no unread comments', () => {
     mockUseInboxPreview.mockReturnValue({
       data: { comments: [] },
       isLoading: false,
     } as ReturnType<typeof useInboxPreview>);
 
-    const { container } = render(<InboxWidget />);
+    render(<InboxWidget />);
 
-    expect(container.firstChild).toBeNull();
+    expect(screen.getByTestId('empty-state')).toBeTruthy();
   });
 
   it('renders unread count, author, content, time and channel for each comment', () => {

@@ -28,41 +28,44 @@ export const RecommendationsStrip: FC = () => {
   if (!items.length) return null;
 
   return (
-    <div className="flex flex-col gap-[10px]">
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-[12px]">
-        {items.map((item) => (
-          <div
-            key={`${item.type}-${item.title}`}
-            className="bg-newTableHeader border border-newTableBorder rounded-[10px] p-[14px] flex flex-col gap-[8px]"
-          >
-            <div className="flex items-center gap-[8px]">
-              <span className={priorityClass(item.priority)}>
+    <div className="flex flex-col">
+      {items.slice(0, 3).map((item, i) => (
+        <div
+          key={`${item.type}-${item.title}`}
+          className={`flex items-start gap-[12px] py-[10px] min-w-0 ${i ? 'border-t border-newTableBorder' : ''}`}
+        >
+          <span
+            aria-hidden="true"
+            className={`mt-[6px] shrink-0 w-[8px] h-[8px] rounded-full ${
+              item.priority === 1 ? 'bg-red-600' : item.priority === 2 ? 'bg-amber-500' : 'bg-btnPrimaryAccent'
+            }`}
+          />
+          <div className="min-w-0 flex-1">
+            <h3 className="text-[13px] font-[700] text-textColor line-clamp-1" title={item.title}>
+              {item.title}
+            </h3>
+            <p className="text-[11.5px] text-newTableText line-clamp-2 mt-[2px]">
+              <span className="sr-only">
                 {item.priority === 1
                   ? t('priority_high', 'High')
                   : item.priority === 2
                     ? t('priority_medium', 'Medium')
                     : t('priority_low', 'Low')}
+                {': '}
               </span>
-              <span className="text-[11px] text-newTableText capitalize">
-                {item.type.replace(/_/g, ' ')}
-              </span>
-            </div>
-            <h3 className="text-[13px] font-semibold text-textColor line-clamp-2">
-              {item.title}
-            </h3>
-            <p className="text-[11px] text-newTableText leading-relaxed line-clamp-2">
               {item.description}
             </p>
-            <button
-              type="button"
-              onClick={() => router.push(item.link)}
-              className="self-start mt-auto inline-flex items-center justify-center min-h-[40px] px-[12px] py-[8px] bg-btnPrimary text-white text-[12px] font-medium rounded-[6px] hover:bg-btnPrimary/90 transition-colors"
-            >
-              {item.action}
-            </button>
           </div>
-        ))}
-      </div>
+          <button
+            type="button"
+            onClick={() => router.push(item.link)}
+            className="shrink-0 h-[30px] px-[10px] text-[12px] font-[600] rounded-[7px] border border-newTableBorder bg-newBgColorInner text-textColor hover:bg-boxHover transition-colors max-w-[120px] truncate"
+            title={item.action}
+          >
+            {item.action}
+          </button>
+        </div>
+      ))}
     </div>
   );
 };

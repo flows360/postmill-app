@@ -50,12 +50,12 @@ export const ChannelsWidget: FC = () => {
     <div className="flex flex-col">
       {rows.map((c, i) => {
         const [label, tone] = c.refreshNeeded
-          ? [t('reconnect', 'Reconnect'), 'red']
+          ? [t('channel_status_reconnect', 'Reconnect'), 'red']
           : c.inBetweenSteps
-            ? [t('finish_setup', 'Finish Setup'), 'amber']
+            ? [t('channel_status_finish_setup', 'Finish Setup'), 'amber']
             : c.disabled
-              ? [t('disabled', 'Disabled'), 'grey']
-              : [t('connected', 'Connected'), 'green'];
+              ? [t('channel_status_disabled', 'Disabled'), 'grey']
+              : [t('channel_status_connected', 'Connected'), 'green'];
         return (
           <Link
             key={c.id}
