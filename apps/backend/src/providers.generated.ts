@@ -143,6 +143,7 @@ import tinyccModules from '@postmill-ai/provider-tinycc';
 import tinyurlModules from '@postmill-ai/provider-tinyurl';
 import tlyModules from '@postmill-ai/provider-tly';
 import togetheraiModules from '@postmill-ai/provider-togetherai';
+import substackModules from '@postmill-ai/provider-substack';
 import tumblrModules from '@postmill-ai/provider-tumblr';
 import tunnelbearModules from '@postmill-ai/provider-tunnelbear';
 import twitchModules from '@postmill-ai/provider-twitch';
@@ -311,6 +312,7 @@ export const providerModules: ProviderModule<any, any>[] = [
   ...tinyurlModules,
   ...tlyModules,
   ...togetheraiModules,
+  ...substackModules,
   ...tumblrModules,
   ...tunnelbearModules,
   ...twitchModules,

@@ -471,6 +471,11 @@ export const PROVIDER_CAPABILITIES: Record<string, ProviderCapability> = {
     refreshToken: false,
     watchlist: false,
   },
+  'substack': {
+    analytics: false, comments: false, firstComment: false, poll: false,
+    video: false, carousel: false, altText: false, maxMedia: 0,
+    linkPreview: false, refreshToken: false, watchlist: false,
+  },
   'devto': {
     analytics: false,
     comments: true,

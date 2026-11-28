@@ -160,6 +160,7 @@
     "@postmill-ai/provider-tinyurl": "workspace:*",
     "@postmill-ai/provider-tly": "workspace:*",
     "@postmill-ai/provider-togetherai": "workspace:*",
+    "@postmill-ai/provider-substack": "workspace:*",
     "@postmill-ai/provider-tumblr": "workspace:*",
     "@postmill-ai/provider-tunnelbear": "workspace:*",
     "@postmill-ai/provider-twitch": "workspace:*",

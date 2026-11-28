@@ -48,6 +48,7 @@ import MoltbookProvider from '@postmill-ai/frontend/components/composer/provider
 import SkoolProvider from '@postmill-ai/frontend/components/composer/providers/skool/skool.provider';
 import WhopProvider from '@postmill-ai/frontend/components/composer/providers/whop/whop.provider';
 import MeweProvider from '@postmill-ai/frontend/components/composer/providers/mewe/mewe.provider';
+import SubstackProvider from '@postmill-ai/frontend/components/composer/providers/substack/substack.provider';
 import TumblrProvider from '@postmill-ai/frontend/components/composer/providers/tumblr/tumblr.provider';
 import PixelfedProvider from '@postmill-ai/frontend/components/composer/providers/pixelfed/pixelfed.provider';
 import PeerTubeProvider from '@postmill-ai/frontend/components/composer/providers/peertube/peertube.provider';
@@ -220,6 +221,10 @@ export const Providers = [
   {
     identifier: 'mewe',
     component: MeweProvider,
+  },
+  {
+    identifier: 'substack',
+    component: SubstackProvider,
   },
   {
     identifier: 'tumblr',

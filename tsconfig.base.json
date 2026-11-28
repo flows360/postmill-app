@@ -931,6 +931,8 @@
       "@postmill-ai/provider-togetherai/*": [
         "libraries/providers/togetherai/src/*"
       ],
+      "@postmill-ai/provider-substack": ["libraries/providers/substack/src"],
+      "@postmill-ai/provider-substack/*": ["libraries/providers/substack/src/*"],
       "@postmill-ai/provider-tumblr": [
         "libraries/providers/tumblr/src"
       ],

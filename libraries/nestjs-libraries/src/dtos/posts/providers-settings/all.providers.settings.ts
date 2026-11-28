@@ -24,6 +24,7 @@ import { MoltbookDto } from '@postmill-ai/nestjs-libraries/dtos/posts/providers-
 import { SkoolDto } from '@postmill-ai/nestjs-libraries/dtos/posts/providers-settings/skool.dto';
 import { WhopDto } from '@postmill-ai/nestjs-libraries/dtos/posts/providers-settings/whop.dto';
 import { MeweDto } from '@postmill-ai/nestjs-libraries/dtos/posts/providers-settings/mewe.dto';
+import { SubstackSettingsDto } from '@postmill-ai/nestjs-libraries/dtos/posts/providers-settings/substack.dto';
 import { ThreadsSettingsDto } from '@postmill-ai/nestjs-libraries/dtos/posts/providers-settings/threads.settings.dto';
 
 export type ProviderExtension<T extends string, M> = { __type: T } & M;
@@ -70,6 +71,7 @@ export type AllProvidersSettings =
   | ProviderExtension<'skool', SkoolDto>
   | ProviderExtension<'mewe', MeweDto>
   | ProviderExtension<'whop', WhopDto>
+  | ProviderExtension<'substack', SubstackSettingsDto>
   | ProviderExtension<'tumblr', None>
   | ProviderExtension<'pixelfed', None>
   | ProviderExtension<'peertube', None>;
@@ -120,6 +122,7 @@ export const allProviders = (setEmpty?: any) => {
     { value: SkoolDto, name: 'skool' },
     { value: WhopDto, name: 'whop' },
     { value: MeweDto, name: 'mewe' },
+    { value: SubstackSettingsDto, name: 'substack' },
     { value: setEmpty, name: 'tumblr' },
     { value: setEmpty, name: 'pixelfed' },
     { value: setEmpty, name: 'peertube' },
